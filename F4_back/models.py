@@ -23,7 +23,7 @@ class Character(Base):
 
     character_id = Column(Integer, primary_key=True)
     character_name = Column(String, nullable=False)
-    character_shape = Column(String)  # URL or path to image
+    character_shape = Column(String)
 
     user_characters = relationship("User_character", back_populates="character")
     bot_characters = relationship("Bot_character", back_populates="character")
@@ -44,7 +44,7 @@ class Game_session(Base):
 
 
 class AI_bot(Base):
-    __tablename__ = "ai_bot"
+    __tablename__ = "AI_bot"
 
     bot_id = Column(Integer, primary_key=True)
     session_id = Column(Integer, ForeignKey("game_session.session_id"), nullable=False)
@@ -52,7 +52,7 @@ class AI_bot(Base):
     bot_score = Column(Integer)
     strategy_id = Column(Integer, ForeignKey("bot_strategy.strategy_id"))
 
-    game_session = relationship("Game_session", back_populates="ai_bots")
+    game_session = relationship("Game_session", back_populates="AI_bots")
     bot_character = relationship("Bot_character", back_populates="bot", uselist=False)
     strategy = relationship("Bot_strategy", back_populates="bots")
     leaderboard_entries = relationship("Leader_board", back_populates="bot")
@@ -63,7 +63,7 @@ class Leader_board(Base):
 
     leader_board_id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("user.user_id"))
-    bot_id = Column(Integer, ForeignKey("ai_bot.bot_id"))
+    bot_id = Column(Integer, ForeignKey("AI_bot.bot_id"))
     session_id = Column(Integer, ForeignKey("game_session.session_id"))
     user_score = Column(Integer)
     rank = Column(Integer)
