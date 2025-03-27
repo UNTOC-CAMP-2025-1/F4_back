@@ -33,5 +33,5 @@ def read_session(
 ):
     session = get_game_session(db, session_id)
     if not session:
-        raise HTTPException(status_code=404, detail="¼¼¼ÇÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù.")
+        raise HTTPException(status_code=404, detail="ì„¸ì…˜ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.")
     return session
