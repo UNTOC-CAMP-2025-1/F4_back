@@ -13,9 +13,9 @@ class User(Base):
     user_email = Column(String, unique=True, nullable=False)
     password_hash = Column(String, nullable=False)
 
-    game_sessions = relationship("Game_session", back_populates="user")
-    user_characters = relationship("User_character", back_populates="user")
-    leaderboard_entries = relationship("Leader_board", back_populates="user")
+    game_session = relationship("Game_session", back_populates="user")
+    user_character = relationship("User_character", back_populates="user")
+    leader_board = relationship("Leader_board", back_populates="user")
 
 
 class Character(Base):
@@ -25,8 +25,8 @@ class Character(Base):
     character_name = Column(String, nullable=False)
     character_shape = Column(String)
 
-    user_characters = relationship("User_character", back_populates="character")
-    bot_characters = relationship("Bot_character", back_populates="character")
+    user_character = relationship("User_character", back_populates="character")
+    bot_character = relationship("Bot_character", back_populates="character")
 
 
 class Game_session(Base):
@@ -39,8 +39,8 @@ class Game_session(Base):
     session_ended_at = Column(TIMESTAMP)
 
     user = relationship("User", back_populates="game_sessions")
-    ai_bots = relationship("AI_bot", back_populates="game_session")
-    leaderboard_entries = relationship("Leader_board", back_populates="game_session")
+    AI_bot = relationship("AI_bot", back_populates="game_session")
+    leade_board = relationship("Leader_board", back_populates="game_session")
 
 
 class AI_bot(Base):
@@ -55,7 +55,7 @@ class AI_bot(Base):
     game_session = relationship("Game_session", back_populates="AI_bots")
     bot_character = relationship("Bot_character", back_populates="bot", uselist=False)
     strategy = relationship("Bot_strategy", back_populates="bots")
-    leaderboard_entries = relationship("Leader_board", back_populates="bot")
+    leader_board = relationship("Leader_board", back_populates="bot")
 
 
 class Leader_board(Base):
@@ -91,7 +91,7 @@ class Bot_character(Base):
     bot_id = Column(Integer, ForeignKey("ai_bot.bot_id"), primary_key=True)
     character_id = Column(Integer, ForeignKey("character.character_id"))
 
-    bot = relationship("AI_bot", back_populates="bot_character")
+    AI_bot = relationship("AI_bot", back_populates="bot_character")
     character = relationship("Character", back_populates="bot_characters")
 
 
@@ -102,4 +102,4 @@ class Bot_strategy(Base):
     strategy_name = Column(String, nullable=False)
     description = Column(Text)
 
-    bots = relationship("AI_bot", back_populates="strategy")
+    AI_bot = relationship("AI_bot", back_populates="strategy")
