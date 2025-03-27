@@ -1,75 +1,37 @@
-from fastapi import APIRouter
-from .game_session_schema import GameSessionCreate, GameSessionUpdate, GameSessionResponse
-from typing import List
-
-router = APIRouter(
-  prefix="/game_session"
+from fastapi import APIRouter, Depends, Header, HTTPException
+from sqlalchemy.orm import Session
+from database import get_db
+from user.auth import get_user_id_from_token
+from .game_session_schema import GameSessionCreate, GameSessionResponse
+from .game_session_crud import (
+    create_game_session, get_game_sessions_by_user, get_game_session
 )
 
-# »ùÇÃ µ¥ÀÌÅÍ (½ÇÁ¦·Î´Â µ¥ÀÌÅÍº£ÀÌ½º¿¡¼­ °¡Á®¿À°í º¯°æ»çÇ× ¹İ¿µÇÏ±â)
-game_sessions = [
-    {"user_id": 1, "user_score": 500,"session_id": 1, "session_started_at": "2025-03-24T10:00:00", "session_ended_at": "2025-03-24T10:30:00"},
-    {"user_id": 2, "user_score": 1000,"session_id": 2, "session_started_at": "2025-03-24T11:00:00", "session_ended_at": "2025-03-24T11:30:00"}
-    # ´õ ¸¹Àº ¼¼¼ÇÀ» Ãß°¡ °¡´É
-]
+router = APIRouter()
 
-# / ·çÆ® °æ·Î
-# API°¡ Á¦´ë·Î ÀÛµ¿ÇÏ´ÂÁö È®ÀÎÇÏ´Â ±âº» °æ·Î
-# /game_session/ °æ·Î¿¡ Á¢±ÙÇÏ¸é ¸Ş¼¼Áö ¹İÈ¯È¯
-@router.get("/")
-def root():
-  return {"message": "Hello from Game Session Router"}
+@router.post("/", response_model=GameSessionResponse)
+def create_session(
+    session_data: GameSessionCreate,
+    Authorization: str = Header(...),
+    db: Session = Depends(get_db)
+):
+    user_id = get_user_id_from_token(Authorization)
+    return create_game_session(db, user_id, session_data)
 
-# /get_session °æ·Î
-# game_sessions ¸ñ·Ï¿¡¼­ skip°ú limit¸¦ ÀÌ¿ëÇÏ¿© °ÔÀÓ ¼¼¼Ç ¸ñ·Ï Á¶È¸
-# skip: Á¶È¸ ½ÃÀÛ ÁöÁ¡, limit: ÇÑ ¹ø¿¡ °¡Á®¿Ã ¼¼¼ÇÀÇ °³¼ö 
-@router.get("/get_sessions", response_model=List[GameSessionResponse])
-def get_sessions(skip: int=0, limit: int=10): # ±âº»°ª ¼³Á¤ÇØ³õÀ½À½
-  return game_sessions[skip: skip + limit]
+@router.get("/my", response_model=list[GameSessionResponse])
+def list_my_sessions(
+    Authorization: str = Header(...),
+    db: Session = Depends(get_db)
+):
+    user_id = get_user_id_from_token(Authorization)
+    return get_game_sessions_by_user(db, user_id)
 
-# /get_sessions/{session_id} °æ·Î
-# session_id¸¦ °æ·Î ¸Å°³º¯¼ö·Î ¹Ş¾Æ¼­ ÇØ´ç ID¸¦ °¡Áø ¼¼¼Ç Á¶È¸
-# game_sessions ¸ñ·ÏÀ» ¼øÂ÷ÀûÀ¸·Î È®ÀÎÇÏ¿© session_id°¡ ÀÏÄ¡ÇÏ´Â ¼¼¼ÇÀ» Ã£°í ¹İÈ¯
-# ¼¼¼ÇÀ» Ã£À» ¼ö ¾ø´Ù¸é {"error": "Session not found"}¶ó´Â ¿À·ù ¸Ş¼¼Áö ¹İÈ¯
-@router.get("/get_session/{session_id}", response_model=GameSessionResponse)
-def get_session(session_id: int):
-  for session in game_sessions:
-    if session["session_id"] == session_id:
-      return session
-  return {"error": "Session not found"}
-  
-# »õ·Î¿î °ÔÀÓ ¼¼¼Ç »ı¼º
-# session_id´Â ÀÚµ¿À¸·Î Áõ°¡µÇµµ·Ï len(game_sessions)+1·Î ¼³Á¤, ³ª¸ÓÁö´Â ¿äÃ»¿¡ µû¸§
-# »õ·Î¿î ¼¼¼ÇÀ» game_sesisons ¸ñ·Ï¿¡ Ãß°¡ÇÑ ÈÄ, »ı¼ºµÈ ¼¼¼Ç Á¤º¸ ¹İÈ¯
-@router.post("/create_session", response_model=GameSessionResponse)
-def create_session(session: GameSessionCreate):
-  new_session = {
-    "user_id" : session.user_id,
-    "user_score": session.user_score,
-    "session_id": len(game_sessions) + 1,
-    "session_started_at": session.session_started_at,
-    "session_ended_at": session.session_ended_at
-  }
-  game_sessions.append(new_session)
-  return new_session
-  
-# °ÔÀÓ ¼¼¼Ç ¾÷µ¥ÀÌÆ® 
-# GameSessionUpdate ¸ğµ¨À» Python µñ¼Å³Ê¸®·Î º¯È¯ÇÏ¿© ±âÁ¸ ¼¼¼Ç¿¡ ¾÷µ¥ÀÌÆ®
-@router.put("/update_session/{session_id}", response_model=GameSessionResponse)
-def update_session(session_id: int, session: GameSessionUpdate):
-  for idx, existing_session in enumerate(game_sessions):
-    if existing_session["session_id"] == session_id:
-      # Pydantic ¸ğµ¨À» model_dump()·Î µñ¼Å³Ê¸®·Î º¯È¯ÇÏ¿© ¾÷µ¥ÀÌÆ®Æ®
-      game_sessions[idx].update(session.model_dump()) 
-      return game_sessions[idx]
-    return {"error": "Session not found"}
-  
-# °ÔÀÓ ¼¼¼Ç »èÁ¦
-# session_id¿¡ ÇØ´çÇÏ´Â °ÔÀÓ ¼¼¼ÇÀ» game_sessions ¸®½ºÆ®¿¡¼­ »èÁ¦
-@router.delete("/delete_session/{session_id}")
-def delete_session(session_id: int):
-  for idx, session in enumerate(game_sessions):
-    if session["session_id"] == session_id:
-      del game_sessions[idx] # ¼¼¼Ç »èÁ¦
-      return {"message": f"Session with ID {session_id} has been deleted"}
-  return {"error": "Session not found"}
+@router.get("/{session_id}", response_model=GameSessionResponse)
+def read_session(
+    session_id: int,
+    db: Session = Depends(get_db)
+):
+    session = get_game_session(db, session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="ì„¸ì…˜ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.")
+    return session
