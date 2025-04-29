@@ -1,40 +1,45 @@
+# db/database.py
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 import os
-from models import Base  # 모델을 정의한 파일에서 Base 임포트
 
-# .env 파일에서 환경 변수를 불러옴
 load_dotenv()
 
-DB_HOST = os.environ.get("DB_HOST")  # 예: localhost
-DB_PASSWORD = os.environ.get("DB_PASSWORD")  # MySQL 비밀번호
-USER_DB_NAME = os.environ.get("USER_DB_NAME")  # DB 이름
-DB_PORT = os.environ.get("DB_PORT", 3306)  # 기본 포트 3306
+DB_HOST = os.environ.get("DB_HOST", "127.0.0.1")
+DB_PORT = os.environ.get("DB_PORT", "3306")
+DB_PASSWORD = os.environ.get("DB_PASSWORD")
 
-# MySQL 연결 URL 생성
-DATABASE_URL = f"mysql+pymysql://root:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{USER_DB_NAME}"
+# 각 도메인별 DB 이름들
+DBS = {
+    "user": os.environ.get("USER_DB_NAME"),
+    "character": os.environ.get("CHARACTER_DB_NAME"),
+    "user_character": os.environ.get("USER_CHARACTER_DB_NAME"),
+    "game_session": os.environ.get("GAME_SESSION_CHARACTER_DB_NAME"),
+    "ai_bot": os.environ.get("AI_BOT_DB_NAME"),
+    "bot_character": os.environ.get("BOT_CHARACTER_DB_NAME"),
+    "bot_strategy": os.environ.get("BOT_STRATEGY_DB_NAME"),
+    "leader_board": os.environ.get("LEADER_BOARD_DB_NAME"),
+}
 
-# SQLAlchemy 엔진 생성
-engine = create_engine(
-    DATABASE_URL,
-    echo=True,  # 쿼리 로그 출력
-    pool_pre_ping=True,  # 연결 상태 확인
-)
+# 엔진/세션/베이스를 도메인별로 보관
+engines = {}
+sessions = {}
+bases = {}
 
-# 세션 생성
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
+for domain, db_name in DBS.items():
+    url = f"mysql+pymysql://root:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{db_name}"
+    engine = create_engine(url, echo=True, pool_pre_ping=True)
+    session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    base = declarative_base()
 
-# 테이블 생성
-Base.metadata.create_all(bind=engine)  # 모델을 통해 테이블 자동 생성
+    engines[domain] = engine
+    sessions[domain] = session
+    bases[domain] = base
 
-# DB 세션을 가져오는 함수
-def get_db():
-    db = SessionLocal()
+# 도메인 이름 받아서 해당 도메인 세션을 yield하는 함수
+def get_db(domain: str = "user"):
+    db = sessions[domain]()
     try:
         yield db
     finally:

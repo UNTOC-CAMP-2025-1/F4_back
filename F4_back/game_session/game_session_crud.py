@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from models import Game_session
-from game_session_schema import GameSessionCreate
+from .game_session_schema import GameSessionCreate
 
 def create_game_session(db: Session, user_id: int, session_data: GameSessionCreate):
     session = Game_session(
