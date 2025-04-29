@@ -38,7 +38,7 @@ for domain, db_name in DBS.items():
     bases[domain] = base
 
 # 도메인 이름 받아서 해당 도메인 세션을 yield하는 함수
-def get_db(domain: str):
+def get_db(domain: str = "user"):
     db = sessions[domain]()
     try:
         yield db

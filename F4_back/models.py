@@ -3,8 +3,6 @@ from sqlalchemy.orm import relationship, declarative_base
 
 Base = declarative_base()
 
-
-
 class User(Base):
     __tablename__ = "user"
 
@@ -38,9 +36,9 @@ class Game_session(Base):
     session_started_at = Column(TIMESTAMP)
     session_ended_at = Column(TIMESTAMP)
 
-    user = relationship("User", back_populates="game_sessions")
-    AI_bot = relationship("AI_bot", back_populates="game_session")
-    leade_board = relationship("Leader_board", back_populates="game_session")
+    user = relationship("User", back_populates="game_session")
+    ai_bot = relationship("AI_bot", back_populates="game_session")
+    leader_board = relationship("Leader_board", back_populates="game_session")
 
 
 class AI_bot(Base):
@@ -52,10 +50,10 @@ class AI_bot(Base):
     bot_score = Column(Integer)
     strategy_id = Column(Integer, ForeignKey("bot_strategy.strategy_id"))
 
-    game_session = relationship("Game_session", back_populates="AI_bots")
-    bot_character = relationship("Bot_character", back_populates="bot", uselist=False)
-    strategy = relationship("Bot_strategy", back_populates="bots")
-    leader_board = relationship("Leader_board", back_populates="bot")
+    game_session = relationship("Game_session", back_populates="ai_bot")
+    bot_character = relationship("Bot_character", back_populates="ai_bot", uselist=False)
+    bot_strategy = relationship("Bot_strategy", back_populates="ai_bot")
+    leader_board = relationship("Leader_board", back_populates="ai_bot")
 
 
 class Leader_board(Base):
@@ -69,9 +67,9 @@ class Leader_board(Base):
     rank = Column(Integer)
     score = Column(Integer)
 
-    user = relationship("User", back_populates="leaderboard_entries")
-    bot = relationship("AI_bot", back_populates="leaderboard_entries")
-    game_session = relationship("Game_session", back_populates="leaderboard_entries")
+    user = relationship("User", back_populates="leader_board")
+    ai_bot = relationship("AI_bot", back_populates="leader_board")
+    game_session = relationship("Game_session", back_populates="leader_board")
 
 
 class User_character(Base):
@@ -81,8 +79,8 @@ class User_character(Base):
     character_id = Column(Integer, ForeignKey("character.character_id"), primary_key=True)
     is_active = Column(Boolean, default=False)
 
-    user = relationship("User", back_populates="user_characters")
-    character = relationship("Character", back_populates="user_characters")
+    user = relationship("User", back_populates="user_character")
+    character = relationship("Character", back_populates="user_character")
 
 
 class Bot_character(Base):
@@ -91,8 +89,8 @@ class Bot_character(Base):
     bot_id = Column(Integer, ForeignKey("AI_bot.bot_id"), primary_key=True)
     character_id = Column(Integer, ForeignKey("character.character_id"))
 
-    AI_bot = relationship("AI_bot", back_populates="bot_character")
-    character = relationship("Character", back_populates="bot_characters")
+    ai_bot = relationship("AI_bot", back_populates="bot_character")
+    character = relationship("Character", back_populates="bot_character")
 
 
 class Bot_strategy(Base):
@@ -102,4 +100,4 @@ class Bot_strategy(Base):
     strategy_name = Column(String(100), nullable=False)
     description = Column(Text)
 
-    AI_bot = relationship("AI_bot", back_populates="strategy")
+    ai_bot = relationship("AI_bot", back_populates="bot_strategy")
