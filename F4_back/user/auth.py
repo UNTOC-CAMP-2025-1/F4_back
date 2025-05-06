@@ -29,3 +29,12 @@ def get_user_id_from_token(Authorization: str) -> int:
     if not payload:
         raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
     return int(payload.get("sub"))
+
+from fastapi import Depends, Header
+
+def get_current_user_id(Authorization: str = Header(...)) -> int:
+    token = Authorization.replace("Bearer ", "")
+    payload = decode_access_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
+    return int(payload.get("sub"))

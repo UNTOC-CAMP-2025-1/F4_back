@@ -1,7 +1,14 @@
 from pydantic import BaseModel
 
-class UserCharacterCreate(BaseModel):
+class UserCharacterBase(BaseModel):
     character_id: int
+    is_active: bool
+
+    class Config:
+        orm_mode = True
+
+class UserCharacterCreate(BaseModel):
+    character_id: int 
 
 class UserCharacterResponse(BaseModel):
     user_id: int
@@ -10,3 +17,6 @@ class UserCharacterResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+class EquipCharacterRequest(BaseModel):
+    character_id: int
