@@ -1,5 +1,6 @@
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
+from fastapi.security import HTTPAuthorizationCredentials
 import os
 from dotenv import load_dotenv
 from fastapi import Header, HTTPException
@@ -22,18 +23,9 @@ def decode_access_token(token: str):
         return payload
     except JWTError:
         return None
-    
-def get_user_id_from_token(Authorization: str) -> int:
-    token = Authorization.replace("Bearer ", "")
-    payload = decode_access_token(token)
-    if not payload:
-        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
-    return int(payload.get("sub"))
 
-from fastapi import Depends, Header
-
-def get_current_user_id(Authorization: str = Header(...)) -> int:
-    token = Authorization.replace("Bearer ", "")
+def get_current_user_id(credentials: HTTPAuthorizationCredentials) -> int:
+    token = credentials.credentials  # Bearer 토큰에서 credentials 부분만 가져옴
     payload = decode_access_token(token)
     if not payload:
         raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")

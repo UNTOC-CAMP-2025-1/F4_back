@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Header
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from models import User
 from user.user_schema import UserCreate, UserLogin, UserResponse, TokenResponse
@@ -8,6 +9,8 @@ from user.user_crud import (
 )
 from user.auth import create_access_token, decode_access_token
 from user.util import generate_auth_code, store_auth_code, verify_auth_code, get_user_db, send_email_code
+
+security = HTTPBearer()
 
 router = APIRouter()
 
@@ -29,8 +32,9 @@ def login(user: UserLogin, db: Session = Depends(get_user_db)):
     return {"access_token": token, "token_type": "bearer"}
 
 @router.get("/me", response_model=UserResponse)
-def get_me(Authorization: str = Header(..., convert_underscores=False), db: Session = Depends(get_user_db)):
-    token = Authorization.replace("Bearer ", "")
+def get_me(authorization: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_user_db)):
+    # HTTPAuthorizationCredentials에서 토큰 추출
+    token = authorization.credentials  # 여기서 credentials를 사용하여 JWT 토큰을 추출
     payload = decode_access_token(token)
     if not payload:
         raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
@@ -65,8 +69,8 @@ def reset_password(user_email: str, code: str, new_password: str, db: Session = 
     return change_user_password(db, user.user_id, new_password)
 
 @router.post("/change-password")
-def change_password(old_password: str, new_password: str, Authorization: str = Header(...), db: Session = Depends(get_user_db)):
-    token = Authorization.replace("Bearer ", "")
+def change_password(old_password: str, new_password: str, authorization: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_user_db)):
+    token = authorization.credentials
     payload = decode_access_token(token)
     if not payload:
         raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
