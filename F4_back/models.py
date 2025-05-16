@@ -21,9 +21,6 @@ class User(Base_user):
     user_email = Column(String(100), unique=True, nullable=False)
     password_hash = Column(String(100), nullable=False)
 
-    # 양방향 관계 설정
-    game_sessions = relationship("Game_session", back_populates="user")
-
 # Game_session 모델 정의
 class Game_session(Base_game_session):
     __tablename__ = "game_session"
@@ -34,9 +31,6 @@ class Game_session(Base_game_session):
     user_score = Column(Integer)
     session_started_at = Column(TIMESTAMP)
     session_ended_at = Column(TIMESTAMP)
-
-    # 양방향 관계 설정
-    user = relationship("User", back_populates="game_sessions")
 
 # AI_bot 모델
 class AI_bot(Base_ai_bot):

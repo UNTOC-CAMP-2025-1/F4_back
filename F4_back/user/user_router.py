@@ -2,13 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException, Header
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from models import User
+from datetime import datetime, timedelta
 from user.user_schema import UserCreate, UserLogin, UserResponse, TokenResponse
 from user.user_crud import (
     get_user_by_name, get_user_by_email, create_user,
     verify_password, change_user_password,
 )
 from user.auth import create_access_token, decode_access_token
-from user.util import generate_auth_code, store_auth_code, verify_auth_code, get_user_db, send_email_code
+from user.util import generate_auth_code, store_auth_code, verify_auth_code, get_user_db, send_email_code, email_auth_codes
 
 security = HTTPBearer()
 
@@ -45,11 +46,26 @@ def get_me(authorization: HTTPAuthorizationCredentials = Depends(security), db: 
 
 @router.post("/send-auth-code")
 def send_auth_code(user_email: str):
+    # 기존 인증 코드가 만료되었는지 확인하고, 만료되었으면 새로 발송
+    if user_email in email_auth_codes and email_auth_codes[user_email]['expiration'] > datetime.now():
+        raise HTTPException(status_code=400, detail="인증 코드가 아직 유효합니다.")
+    
     code = generate_auth_code()
-    store_auth_code(user_email, code)
-    send_email_code(user_email, code)  # ✅ 실제 메일 발송
+    expiration_time = datetime.now() + timedelta(minutes=10)  # 10분 유효
+    store_auth_code(user_email, code, expiration_time)
+    send_email_code(user_email, code)  # 실제 메일 발송
     return {"message": "인증 코드가 이메일로 전송되었습니다."}
 
+@router.post("/resend-auth-code")
+def resend_auth_code(user_email: str):
+
+    code = generate_auth_code()
+    expiration_time = datetime.now() + timedelta(minutes=10)  # 10분 유효
+
+    store_auth_code(user_email, code, expiration_time)
+    send_email_code(user_email, code)  # 실제 메일 발송
+    
+    return {"message": "새 인증 코드가 이메일로 전송되었습니다."}
 
 @router.post("/verify-auth-code")
 def verify_email_code(user_email: str, code: str):

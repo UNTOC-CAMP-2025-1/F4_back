@@ -1,23 +1,42 @@
 import random
+from datetime import datetime, timedelta
 from database import get_db
 from sqlalchemy.orm import Session
 
+# 인증 코드 저장소 (이메일, 코드, 만료 시간)
 email_auth_codes = {}
 
+# 인증 코드 생성 함수
 def generate_auth_code():
     return str(random.randint(100000, 999999))
 
-def store_auth_code(user_email: str, code: str):
-    email_auth_codes[user_email] = code
+# 인증 코드 저장 함수 (만료 시간도 함께 저장)
+def store_auth_code(user_email: str, code: str, expiration_time: datetime):
+    expiration_time = datetime.now() + timedelta(minutes=10)  # 인증 코드 10분 후 만료
+    email_auth_codes[user_email] = {'code': code, 'expiration': expiration_time}
 
+# 인증 코드 검증 함수 (만료 시간도 확인)
 def verify_auth_code(user_email: str, code: str):
-    return email_auth_codes.get(user_email) == code
+    auth_info = email_auth_codes.get(user_email)
+    if not auth_info:
+        return False
+    # 만료 시간 확인
+    if auth_info['expiration'] < datetime.now():
+        del email_auth_codes[user_email]  # 만료된 코드 삭제
+        return False
+    return auth_info['code'] == code
+
+# 인증 코드 유효성 검사 후, 만료된 경우 새 코드 발송
+def resend_auth_code(user_email: str):
+    code = generate_auth_code()
+    store_auth_code(user_email, code)  # 새 코드 저장
+    send_email_code(user_email, code)  # 이메일로 코드 전송
+    return {"message": "새 인증 코드가 이메일로 전송되었습니다."}
 
 def get_user_db() -> Session:
     return next(get_db("user"))
 
-# user/util.py
-
+# 이메일 코드 발송 함수 (변경 없음)
 import os
 import smtplib
 from email.mime.text import MIMEText
@@ -34,7 +53,7 @@ def send_email_code(user_email: str, code: str):
 
     msg = MIMEText(f"[TINIWORM 인증]\n\n요청하신 인증 코드는 [{code}] 입니다.")
     msg["Subject"] = "인증 코드 안내"
-    msg["From"] = EMAIL_USER
+    msg["From"] = "TINIWORM"
     msg["To"] = user_email
 
     try:
