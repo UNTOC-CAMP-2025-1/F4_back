@@ -1,0 +1,21 @@
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from database import get_db
+from functools import partial
+from leader_board.leader_board_crud import get_top_users
+from leader_board.leader_board_schema import LeaderBoardEntry
+
+router = APIRouter()
+
+get_leaderboard_db = partial(get_db, domain="leader_board")
+
+@router.get("/top", response_model=list[LeaderBoardEntry])
+def read_top_users(db: Session = Depends(get_leaderboard_db)):
+    top_users = get_top_users(db)
+    return [
+        {
+            "rank": i + 1,
+            "user_id": user.user_id,
+            "user_score": user.user_score
+        } for i, user in enumerate(top_users)
+    ]
