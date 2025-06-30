@@ -1,9 +1,9 @@
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
-from fastapi.security import HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 import os
 from dotenv import load_dotenv
-from fastapi import Header, HTTPException
+from fastapi import Header, HTTPException, Security
 
 load_dotenv()
 
@@ -24,7 +24,9 @@ def decode_access_token(token: str):
     except JWTError:
         return None
 
-def get_current_user_id(credentials: HTTPAuthorizationCredentials) -> int:
+security = HTTPBearer()
+
+def get_current_user_id(credentials: HTTPAuthorizationCredentials = Security(security)) -> int:
     token = credentials.credentials  # Bearer 토큰에서 credentials 부분만 가져옴
     payload = decode_access_token(token)
     if not payload:
