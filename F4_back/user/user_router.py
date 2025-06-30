@@ -67,6 +67,28 @@ def resend_auth_code(user_email: str):
     
     return {"message": "새 인증 코드가 이메일로 전송되었습니다."}
 
+@router.post("/verify-id-and-send-auth-code")
+def verify_id_and_send_auth_code(user_name: str, user_email: str, db: Session = Depends(get_user_db)):
+    # user_id로 사용자 조회
+    user = db.query(User).filter(User.user_name == user_name).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="존재하지 않는 사용자 ID입니다.")
+    
+    if user.user_email != user_email:
+        raise HTTPException(status_code=400, detail="이메일이 사용자 ID와 일치하지 않습니다.")
+    
+    if user_email in email_auth_codes and email_auth_codes[user_email]['expiration'] > datetime.now():
+        raise HTTPException(status_code=400, detail="인증 코드가 아직 유효합니다.")
+    
+    # 인증 코드 발급
+    code = generate_auth_code()
+    expiration_time = datetime.now() + timedelta(minutes=10)
+    store_auth_code(user_email, code, expiration_time)
+    send_email_code(user_email, code)
+
+    return {"message": "인증 코드가 이메일로 전송되었습니다."}
+
 @router.post("/verify-auth-code")
 def verify_email_code(user_email: str, code: str):
     if verify_auth_code(user_email, code):
