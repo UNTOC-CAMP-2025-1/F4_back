@@ -26,7 +26,7 @@ def decide_greedy(state: BotFullState) -> int:
 
 
 def decide_evasive(state: BotFullState) -> int:
-    danger_threshold = 3.0
+    danger_threshold = 3.0 # 적과의 거리 판단 기준
 
     def is_near_body(pos: Position):
         for enemy in state.enemies:
