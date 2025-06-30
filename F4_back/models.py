@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Text, TIMESTAMP
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Text, TIMESTAMP, Float, func
 from sqlalchemy.orm import relationship
 from database import bases
 
@@ -10,6 +10,7 @@ Base_leader_board = bases["leader_board"]
 Base_character = bases["character"]
 Base_user_character = bases["user_character"]
 Base_bot_character = bases["bot_character"]
+Base_bot_log = bases["bot_log"]
 
 # User 모델 정의 (먼저 정의되어야 함)
 class User(Base_user):
@@ -85,3 +86,25 @@ class User_character(Base_user_character):
     user_id = Column(Integer, ForeignKey("user.user.user_id"), primary_key=True)
     character_id = Column(Integer, ForeignKey("character.character.character_id"), primary_key=True)
     is_active = Column(Boolean, default=False)
+
+# Bot_log 모델
+class BotLog(Base_bot_log):
+    __tablename__ = "bot_log"
+    __table_args__ = {'schema': 'bot_log'}
+
+    id = Column(Integer, primary_key=True, index=True)
+    bot_id = Column(Integer, ForeignKey("AI_bot.AI_bot.bot_id"), nullable=False)
+
+    timestamp = Column(TIMESTAMP, server_default=func.now())
+
+    # 상태 정보
+    state_x = Column(Float)
+    state_y = Column(Float)
+    player_x = Column(Float)
+    player_y = Column(Float)
+
+    # 행동 정보
+    action = Column(Integer)        # 0~7 방향
+    boost = Column(Boolean)         # 부스터 사용 여부
+    reward = Column(Float)          # 추후 학습 시 사용
+    event = Column(String)          # 예: 'kill', 'die', 'eat_jewel'

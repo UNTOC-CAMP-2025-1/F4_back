@@ -20,6 +20,7 @@ DBS = {
     "bot_character": os.environ.get("BOT_CHARACTER_DB_NAME"),
     "bot_strategy": os.environ.get("BOT_STRATEGY_DB_NAME"),
     "leader_board": os.environ.get("LEADER_BOARD_DB_NAME"),
+    "bot_log": os.environ.get("BOT_LOG"),
 }
 
 # 엔진/세션/베이스를 도메인별로 보관
