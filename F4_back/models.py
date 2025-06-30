@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Text, TIMESTAMP, Float, func
 from sqlalchemy.orm import relationship
 from database import bases
-
+"""
 Base_user = bases["user"]
 Base_game_session = bases["game_session"]
 Base_ai_bot = bases["ai_bot"]
@@ -10,10 +10,11 @@ Base_leader_board = bases["leader_board"]
 Base_character = bases["character"]
 Base_user_character = bases["user_character"]
 Base_bot_character = bases["bot_character"]
-Base_bot_log = bases["bot_log"]
+Base_bot_log = bases["bot_log"]"""
 
+Base = list(bases.values())[0]
 # User 모델 정의 (먼저 정의되어야 함)
-class User(Base_user):
+class User(Base):
     __tablename__ = "user"
     __table_args__ = {'schema': 'user'}
 
@@ -23,18 +24,18 @@ class User(Base_user):
     password_hash = Column(String(100), nullable=False)
 
 # Game_session 모델 정의
-class Game_session(Base_game_session):
+class Game_session(Base):
     __tablename__ = "game_session"
     __table_args__ = {'schema': 'game_session'}
 
     session_id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.user.user_id"), nullable=False)
     user_score = Column(Integer)
     session_started_at = Column(TIMESTAMP)
     session_ended_at = Column(TIMESTAMP)
 
 # AI_bot 모델
-class AI_bot(Base_ai_bot):
+class AI_bot(Base):
     __tablename__ = "AI_bot"
     __table_args__ = {'schema': 'AI_bot'}
     bot_id = Column(Integer, primary_key=True)
@@ -44,7 +45,7 @@ class AI_bot(Base_ai_bot):
     strategy_id = Column(Integer, ForeignKey("bot_strategy.bot_strategy.strategy_id"))
 
 # Leader_board 모델
-class Leader_board(Base_leader_board):
+class Leader_board(Base):
     __tablename__ = "leader_board"
     __table_args__ = {'schema': 'leader_board'}
     leader_board_id = Column(Integer, primary_key=True)
@@ -56,7 +57,7 @@ class Leader_board(Base_leader_board):
     score = Column(Integer)
 
 # Bot_strategy 모델
-class Bot_strategy(Base_bot_strategy):
+class Bot_strategy(Base):
     __tablename__ = "bot_strategy"
     __table_args__ = {'schema': 'bot_strategy'}
     strategy_id = Column(Integer, primary_key=True)
@@ -64,7 +65,7 @@ class Bot_strategy(Base_bot_strategy):
     description = Column(Text)
 
 # Character 모델
-class Character(Base_character):
+class Character(Base):
     __tablename__ = "character"
     __table_args__ = {'schema': 'character'}
     character_id = Column(Integer, primary_key=True)
@@ -73,14 +74,14 @@ class Character(Base_character):
     image_url = Column(String(255))
 
 # Bot_character 모델
-class Bot_character(Base_bot_character):
+class Bot_character(Base):
     __tablename__ = "bot_character"
     __table_args__ = {'schema': 'bot_character'}
     bot_id = Column(Integer, ForeignKey("AI_bot.AI_bot.bot_id"), primary_key=True)
     character_id = Column(Integer, ForeignKey("character.character.character_id"))
 
 # User_character 모델
-class User_character(Base_user_character):
+class User_character(Base):
     __tablename__ = "user_character"
     __table_args__ = {'schema': 'user_character'}
     user_id = Column(Integer, ForeignKey("user.user.user_id"), primary_key=True)
@@ -88,7 +89,7 @@ class User_character(Base_user_character):
     is_active = Column(Boolean, default=False)
 
 # Bot_log 모델
-class BotLog(Base_bot_log):
+class BotLog(Base):
     __tablename__ = "bot_log"
     __table_args__ = {'schema': 'bot_log'}
 
