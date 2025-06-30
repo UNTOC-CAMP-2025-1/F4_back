@@ -23,10 +23,11 @@ DBS = {
     "bot_log": os.environ.get("BOT_LOG"),
 }
 
+Base = declarative_base()
 # 엔진/세션/베이스를 도메인별로 보관
 engines = {}
 sessions = {}
-bases = {}
+
 
 for domain, db_name in DBS.items():
     url = f"mysql+pymysql://root:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{db_name}"
@@ -36,7 +37,8 @@ for domain, db_name in DBS.items():
 
     engines[domain] = engine
     sessions[domain] = session
-    bases[domain] = base
+
+bases = {domain: Base for domain in DBS}
 
 # 도메인 이름 받아서 해당 도메인 세션을 yield하는 함수
 def get_db(domain: str = "user"):
