@@ -4,6 +4,7 @@ from character.character_router import router as character_router
 from user_character.user_character_router import router as user_character_router
 from game_session.game_session_router import router as game_session_router
 from leader_board.leader_board_router import router as leader_board_router
+from bot_character.bot_character_router import router as bot_character_router
 
 app = FastAPI()
 
@@ -12,6 +13,7 @@ app.include_router(character_router, prefix="/character", tags=["Character"])
 app.include_router(user_character_router, prefix="/user_character", tags=["UserCharacter"])
 app.include_router(game_session_router, prefix="/game-session", tags=["GameSession"])
 app.include_router(leader_board_router, prefix="/leader-board", tags=["LeaderBoard"])
+app.include_router(bot_character_router, prefix="/bot_character", tags=["BotCharacter"])
 
 if __name__ == "__main__":
     import uvicorn
