@@ -47,3 +47,13 @@ def read_session(
     if not session:
         raise HTTPException(status_code=404, detail="세션을 찾을 수 없습니다.")
     return session
+
+@router.get("/my", response_model=list[GameSessionResponse])
+async def list_my_sessions(
+    sort_by: str = "recent",  # "score" 또는 "recent"
+    authorization: str = Depends(security),
+    db: Session = Depends(get_gamesession_db)
+):
+    token = authorization
+    user_id = get_current_user_id(token)
+    return get_game_session_by_user(db, user_id, sort_by)
