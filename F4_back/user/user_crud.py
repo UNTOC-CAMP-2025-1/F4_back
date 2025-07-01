@@ -27,3 +27,25 @@ def change_user_password(db: Session, user_id: int, new_password: str):
     db.commit()
     db.refresh(user)
     return user
+
+def get_user_coin(db: Session, user_id: int):
+    user = db.query(User).filter(User.user_id == user_id).first()
+    return user.coin if user else None
+
+def add_user_coin(db: Session, user_id: int, amount: int):
+    user = db.query(User).filter(User.user_id == user_id).first()
+    if user:
+        user.coin += amount
+        db.commit()
+        db.refresh(user)
+    return user
+
+def subtract_user_coin(db: Session, user_id: int, amount: int):
+    user = db.query(User).filter(User.user_id == user_id).first()
+    if user:
+        if user.coin < amount:
+            raise ValueError("코인이 부족합니다.")
+        user.coin -= amount
+        db.commit()
+        db.refresh(user)
+    return user
