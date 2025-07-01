@@ -19,8 +19,15 @@ def create_game_session(db: Session, user_id: int, session_data: GameSessionCrea
     db.refresh(session)
     return session
 
-def get_game_session_by_user(db: Session, user_id: int):
-    return db.query(Game_session).filter(Game_session.user_id == user_id).all()
+def get_game_session_by_user(db: Session, user_id: int, sort_by: str = "recent"):
+    query = db.query(Game_session).filter(Game_session.user_id == user_id)
+
+    if sort_by == "score":
+        query = query.order_by(Game_session.user_score.desc())
+    else:  # 기본값은 최근 순
+        query = query.order_by(Game_session.session_started_at.desc())
+
+    return query.all()
 
 def get_game_session_by_session(db: Session, session_id: int):
     game_session = db.query(Game_session).filter(Game_session.session_id == session_id).first()
