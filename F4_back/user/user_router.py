@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Header
+from fastapi import APIRouter, Depends, HTTPException, Header, Body
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from models import User
@@ -7,6 +7,7 @@ from user.user_schema import UserCreate, UserLogin, UserResponse, TokenResponse
 from user.user_crud import (
     get_user_by_name, get_user_by_email, create_user,
     verify_password, change_user_password,
+    get_user_coin, add_user_coin, subtract_user_coin,
 )
 from user.auth import create_access_token, decode_access_token
 from user.util import generate_auth_code, store_auth_code, verify_auth_code, get_user_db, send_email_code, email_auth_codes
@@ -119,3 +120,24 @@ def change_password(old_password: str, new_password: str, authorization: HTTPAut
         raise HTTPException(status_code=401, detail="기존 비밀번호가 일치하지 않습니다.")
     
     return change_user_password(db, user_id, new_password)
+
+@router.get("/coin")
+def get_my_coin(authorization: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_user_db)):
+    user_id = decode_access_token(authorization.credentials).get("sub")
+    coin = get_user_coin(db, int(user_id))
+    return {"coin": coin}
+
+@router.post("/coin/add")
+def add_coin(amount: int = Body(...), authorization: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_user_db)):
+    user_id = decode_access_token(authorization.credentials).get("sub")
+    user = add_user_coin(db, int(user_id), amount)
+    return {"message": f"{amount} 코인 추가됨", "coin": user.coin}
+
+@router.post("/coin/subtract")
+def subtract_coin(amount: int = Body(...), authorization: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_user_db)):
+    user_id = decode_access_token(authorization.credentials).get("sub")
+    try:
+        user = subtract_user_coin(db, int(user_id), amount)
+        return {"message": f"{amount} 코인 차감됨", "coin": user.coin}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))

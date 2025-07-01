@@ -22,6 +22,7 @@ class User(Base):
     user_name = Column(String(100), unique=True, nullable=False)
     user_email = Column(String(100), unique=True, nullable=False)
     password_hash = Column(String(100), nullable=False)
+    coin = Column(Integer, default=0)
 
 # Game_session 모델 정의
 class Game_session(Base):
