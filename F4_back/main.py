@@ -1,10 +1,5 @@
 from fastapi import FastAPI
-<<<<<<< HEAD
-from fastapi.middleware.cors import CORSMiddleware  # 🔹 CORS 모듈 추가
-
-=======
 from fastapi.openapi.utils import get_openapi
->>>>>>> dayeon_back
 from user.user_router import router as user_router
 from character.character_router import router as character_router
 from user_character.user_character_router import router as user_character_router
@@ -14,15 +9,6 @@ from bot_character.bot_character_router import router as bot_character_router
 from bot_log.bot_log_router import router as bot_log_router
 
 app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 
 app.include_router(user_router, prefix="/user", tags=["User"])
 app.include_router(character_router, prefix="/character", tags=["Character"])
