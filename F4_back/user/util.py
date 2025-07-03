@@ -12,7 +12,7 @@ def generate_auth_code():
 
 # 인증 코드 저장 함수 (만료 시간도 함께 저장)
 def store_auth_code(user_email: str, code: str, expiration_time: datetime):
-    expiration_time = datetime.now() + timedelta(minutes=10)  # 인증 코드 10분 후 만료
+    expiration_time = datetime.now() + timedelta(minutes=1)  # 인증 코드 10분 후 만료
     email_auth_codes[user_email] = {'code': code, 'expiration': expiration_time}
 
 # 인증 코드 검증 함수 (만료 시간도 확인)
