@@ -10,7 +10,7 @@ from user.user_crud import (
     get_user_coin, add_user_coin, subtract_user_coin,
 )
 from user.auth import create_access_token, decode_access_token
-from user.util import generate_auth_code, store_auth_code, verify_auth_code, get_user_db, send_email_code, email_auth_codes, give_auth_code
+from user.util import generate_auth_code, store_auth_code, verify_auth_code, get_user_db, send_email_code, email_auth_codes
 
 security = HTTPBearer()
 
@@ -95,10 +95,6 @@ def verify_email_code(user_email: str, code: str):
     if verify_auth_code(user_email, code):
         return {"message": "이메일 인증 성공!"}
     raise HTTPException(status_code=400, detail="인증 코드가 올바르지 않습니다.")
-
-@router.get("/get-auth-code")
-def get_email_code(user_email: str):
-    return give_auth_code(user_email)
 
 @router.post("/reset-password")
 def reset_password(user_email: str, code: str, new_password: str, db: Session = Depends(get_user_db)):

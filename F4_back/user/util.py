@@ -15,16 +15,6 @@ def store_auth_code(user_email: str, code: str, expiration_time: datetime):
     expiration_time = datetime.now() + timedelta(minutes=10)  # 인증 코드 10분 후 만료
     email_auth_codes[user_email] = {'code': code, 'expiration': expiration_time}
 
-def give_auth_code(user_email: str):
-    auth_info = email_auth_codes.get(user_email)
-    if not auth_info:
-        return False
-    # 만료 시간 확인
-    if auth_info['expiration'] < datetime.now():
-        del email_auth_codes[user_email]  # 만료된 코드 삭제
-        return False
-    return auth_info['code']
-
 # 인증 코드 검증 함수 (만료 시간도 확인)
 def verify_auth_code(user_email: str, code: str):
     auth_info = email_auth_codes.get(user_email)
