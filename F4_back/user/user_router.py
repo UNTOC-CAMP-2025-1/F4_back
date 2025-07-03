@@ -101,10 +101,7 @@ def get_email_code(user_email: str):
     return give_auth_code(user_email)
 
 @router.post("/reset-password")
-def reset_password(user_email: str, code: str, new_password: str, db: Session = Depends(get_user_db)):
-    if not verify_auth_code(user_email, code):
-        raise HTTPException(status_code=400, detail="인증 코드가 올바르지 않습니다.")
-
+def reset_password(user_email: str, new_password: str, db: Session = Depends(get_user_db)):
     user = get_user_by_email(db, user_email)
     if not user:
         raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
