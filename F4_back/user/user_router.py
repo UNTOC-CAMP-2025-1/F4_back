@@ -142,3 +142,29 @@ def subtract_coin(amount: int = Body(...), authorization: HTTPAuthorizationCrede
         return {"message": f"{amount} 코인 차감됨", "coin": user.coin}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+@router.post("/profile/select")
+def select_profile(
+    profile_id: int = Body(...),
+    profile_url: str = Body(...),
+    db: Session = Depends(get_user_db),
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    user_id = decode_access_token(credentials.credentials).get("sub")
+    user = db.query(User).filter(User.user_id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="유저가 없습니다")
+
+    user.profile_id = profile_id
+    user.profile_url = profile_url
+    db.commit()
+    return {"message": "프로필이 저장되었습니다", "profile_id": profile_id, "profile_url": profile_url}
+
+@router.get("/profile/me")
+def get_my_profile(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_user_db)):
+    user_id = decode_access_token(credentials.credentials).get("sub")
+    user = db.query(User).filter(User.user_id == user_id).first()
+    return {
+        "profile_id": user.profile_id,
+        "profile_url": user.profile_url
+    }
