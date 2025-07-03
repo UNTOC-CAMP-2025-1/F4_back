@@ -23,6 +23,8 @@ class User(Base):
     user_email = Column(String(100), unique=True, nullable=False)
     password_hash = Column(String(100), nullable=False)
     coin = Column(Integer, default=0)
+    profile_id = Column(Integer, nullable=True)
+    profile_url = Column(String(255), nullable=True)
 
 # Game_session 모델 정의
 class Game_session(Base):
