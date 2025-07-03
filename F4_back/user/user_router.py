@@ -61,7 +61,7 @@ def send_auth_code(user_email: str):
 def resend_auth_code(user_email: str):
 
     code = generate_auth_code()
-    expiration_time = datetime.now() + timedelta(minutes=10)  # 10분 유효
+    expiration_time = datetime.now() + timedelta(minutes=1)  # 10분 유효
 
     store_auth_code(user_email, code, expiration_time)
     send_email_code(user_email, code)  # 실제 메일 발송
