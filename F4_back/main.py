@@ -1,6 +1,10 @@
 from fastapi import FastAPI
+<<<<<<< HEAD
 from fastapi.middleware.cors import CORSMiddleware  # 🔹 CORS 모듈 추가
 
+=======
+from fastapi.openapi.utils import get_openapi
+>>>>>>> dayeon_back
 from user.user_router import router as user_router
 from character.character_router import router as character_router
 from user_character.user_character_router import router as user_character_router
