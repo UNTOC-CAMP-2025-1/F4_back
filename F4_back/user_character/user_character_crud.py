@@ -1,10 +1,13 @@
 from sqlalchemy.orm import Session
 from models import User_character
 from fastapi import HTTPException
+from character.character_crud import get_character_by_id
+from database import get_db
 
 def add_user_character_by_system(db: Session, user_id: int, character_id: int):
     # 캐릭터가 실제 존재하는지 확인
-    if not db.query(User_character).filter_by(character_id=character_id).first():
+    character_db = next(get_db("character"))
+    if not get_character_by_id(character_db, character_id):
         raise HTTPException(status_code=404, detail="해당 캐릭터는 존재하지 않습니다.")
 
     db_user_char = db.query(User_character).filter_by(user_id=user_id, character_id=character_id).first()
