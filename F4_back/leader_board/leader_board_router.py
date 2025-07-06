@@ -15,7 +15,7 @@ def read_top_users(db: Session = Depends(get_leaderboard_db)):
     return [
         {
             "rank": i + 1,
-            "user_id": user.user_id,
+            "user_name": user.user_name,
             "user_score": user.user_score
         } for i, user in enumerate(top_users)
     ]
