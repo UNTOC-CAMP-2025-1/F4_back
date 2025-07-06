@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from database import get_db
 from functools import partial
-from leader_board.leader_board_crud import get_top_users
+from leader_board.leader_board_crud import get_top_users_from_game_sessions
 from leader_board.leader_board_schema import LeaderBoardEntry
 
 router = APIRouter()
@@ -10,12 +10,12 @@ router = APIRouter()
 get_leaderboard_db = partial(get_db, domain="leader_board")
 
 @router.get("/top", response_model=list[LeaderBoardEntry])
-def read_top_users(db: Session = Depends(get_leaderboard_db)):
-    top_users = get_top_users(db)
+def read_top_users():
+    top_users = get_top_users_from_game_sessions()
     return [
         {
             "rank": i + 1,
-            "user_name": user.user_name,
-            "user_score": user.user_score
-        } for i, user in enumerate(top_users)
+            "user_name": row.user_name,
+            "user_score": row.user_score
+        } for i, row in enumerate(top_users)
     ]
