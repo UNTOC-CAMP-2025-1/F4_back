@@ -72,8 +72,6 @@ class Character(Base):
     __tablename__ = "character"
     __table_args__ = {'schema': 'character'}
     character_id = Column(Integer, primary_key=True)
-    character_name = Column(String(100), nullable=False)
-    character_shape = Column(String(100))
     image_url = Column(String(255))
 
 # Bot_character 모델

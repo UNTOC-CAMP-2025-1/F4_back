@@ -19,7 +19,7 @@ def get_characters(db: Session = Depends(get_character_db)):
 # 캐릭터 생성 (관리자 기능)
 @router.post("/", response_model=CharacterBase)
 def add_character(character: CharacterCreate, db: Session = Depends(get_character_db)):
-    return create_character(db, character.character_name, character.character_shape, character.image_url)
+    return create_character(db, character.image_url)
 
 # 캐릭터 삭제 (관리자 기능)
 @router.delete("/{character_id}")

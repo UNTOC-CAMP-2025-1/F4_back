@@ -7,10 +7,8 @@ def get_all_characters(db: Session):
 def get_character_by_id(db: Session, character_id: int):
     return db.query(Character).filter(Character.character_id == character_id).first()
 
-def create_character(db: Session, name: str, shape: str, image_url: str):
+def create_character(db: Session, image_url: str):
     new_char = Character(
-        character_name=name,
-        character_shape=shape,
         image_url=image_url
     )
     db.add(new_char)
