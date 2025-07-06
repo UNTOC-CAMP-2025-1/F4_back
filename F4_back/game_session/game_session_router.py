@@ -14,19 +14,20 @@ security = HTTPBearer()
 
 router = APIRouter()
 
+
+get_game_session_db = partial(get_db, domain="game_session")
+
 # 게임 세션 생성
 @router.post("/", response_model=GameSessionResponse)
 def create_session(
     session_data: GameSessionCreate,
     authorization: str = Depends(security),
-    db: Session = Depends(get_gamesession_db)
+    db: Session = Depends(get_game_session_db)
 ):
     token = authorization  # 직접 토큰을 str로 받음
     user_id = get_current_user_id(token)  # JWT 토큰에서 유저 ID 추출
     new_game_session = create_game_session(db, user_id, session_data)  # 게임 세션 생성
     return new_game_session
-
-get_game_session_db = partial(get_db, domain="game_session")
 
 @router.get("/my", response_model=list[GameSessionResponse])
 async def list_my_sessions(
