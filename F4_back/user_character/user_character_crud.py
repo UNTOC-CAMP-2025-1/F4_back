@@ -3,6 +3,10 @@ from models import User_character
 from fastapi import HTTPException
 
 def add_user_character_by_system(db: Session, user_id: int, character_id: int):
+    # 캐릭터가 실제 존재하는지 확인
+    if not db.query(User_character).filter_by(character_id=character_id).first():
+        raise HTTPException(status_code=404, detail="해당 캐릭터는 존재하지 않습니다.")
+
     db_user_char = db.query(User_character).filter_by(user_id=user_id, character_id=character_id).first()
     if db_user_char:
         return db_user_char  # 이미 보유 중이면 중복 지급 방지
