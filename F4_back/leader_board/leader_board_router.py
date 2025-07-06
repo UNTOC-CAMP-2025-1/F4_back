@@ -16,6 +16,6 @@ def read_top_users():
         {
             "rank": i + 1,
             "user_name": row.user_name,
-            "user_score": row.user_score
+            "user_score": row.max_score
         } for i, row in enumerate(top_users)
     ]
