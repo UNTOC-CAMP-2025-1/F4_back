@@ -50,10 +50,9 @@ def read_session(
 
 @router.get("/my", response_model=list[GameSessionResponse])
 async def list_my_sessions(
-    sort_by: str = "recent",  # "score" 또는 "recent"
     authorization: str = Depends(security),
-    db: Session = Depends(get_gamesession_db)
+    db: Session = Depends(get_db("game_session"))
 ):
     token = authorization
     user_id = get_current_user_id(token)
-    return get_game_session_by_user(db, user_id, sort_by)
+    return get_game_session_by_user(db, user_id)
