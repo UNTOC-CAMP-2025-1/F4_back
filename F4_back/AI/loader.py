@@ -6,7 +6,7 @@ except Exception as e:
     torch = None
     TORCH_AVAILABLE = False
 
-from dqn_model import DQN
+from AI.dqn_model import DQN
 
 if TORCH_AVAILABLE:
     try:
