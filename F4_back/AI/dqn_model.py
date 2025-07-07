@@ -3,9 +3,12 @@ try:
     import torch.nn as nn
     import torch.nn.functional as F
     TORCH_AVAILABLE = True
-except ImportError:
-    print("[경고] torch가 설치되어 있지 않아 DQN 모델을 사용할 수 없습니다.")
+except Exception as e:
+    print(f"[경고] torch import 실패: {e}")
     TORCH_AVAILABLE = False
+    torch = None
+    nn = None
+    F = None
 
 if TORCH_AVAILABLE:
     class DQN(nn.Module):
