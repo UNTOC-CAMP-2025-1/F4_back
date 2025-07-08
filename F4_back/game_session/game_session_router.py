@@ -13,6 +13,7 @@ from user.auth import get_current_user_id
 from functools import partial
 from bot_log.bot_log_crud import get_bot_logs_by_session_id
 import json
+import os
 
 security = HTTPBearer()
 
@@ -69,10 +70,12 @@ def end_session(
     # 2. 해당 세션의 bot_log 가져오기
     bot_logs = get_bot_logs_by_session_id(db, session_id)
 
-    # 3. 저장 경로 (Colab에서 마운트된 Google Drive 기준)
-    save_path = f"/content/drive/MyDrive/bot_logs/session_{session_id}.json"
+    # 3. 저장 디렉토리 확인 및 생성
+    dir_path = "/content/drive/MyDrive/bot_logs"
+    os.makedirs(dir_path, exist_ok=True)
 
-    # 4. json 파일로 저장
+    # 4. 파일 경로 설정 및 저장
+    save_path = f"{dir_path}/session_{session_id}.json"
     with open(save_path, "w") as f:
         json.dump([log.to_dict() for log in bot_logs], f)
 
