@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+"""from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 import torch
 import torch.nn as nn
@@ -38,4 +38,4 @@ def decide_action(data: BotState):
             action = torch.argmax(output, dim=1).item()
         return {"action": action}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))"""
