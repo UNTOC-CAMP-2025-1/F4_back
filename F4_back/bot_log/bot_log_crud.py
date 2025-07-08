@@ -29,5 +29,5 @@ def create_bot_log(db: Session, bot_log: BotLogCreate):
     return db_bot_log
 
 def get_bot_logs_by_session_id(db: Session, session_id: int):
-    logs = db.query(BotLog).filter(BotLog.game_session_id == session_id).all()
+    logs = db.query(BotLog).filter(BotLog.session_id == session_id).all()
     return logs

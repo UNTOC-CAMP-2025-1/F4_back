@@ -109,7 +109,7 @@ class BotLog(Base):
     def to_dict(self):
         return {
             "bot_id": self.bot_id,
-            "game_session_id": self.game_session_id,
+            "session_id": self.session_id,
             "step": self.step,
             "state_x": self.state_x,
             "state_y": self.state_y,
