@@ -3,6 +3,9 @@ from sqlalchemy.orm import Session
 from AI_bot.AI_bot_schema import StateInput, ActionOutput, AIBotResponse, AIBotCreate
 from AI_bot.AI_bot_crud import decide_ai_action, create_ai_bot
 from AI_bot.util import get_db_by_domain
+from database import get_db
+from user.auth import get_current_user_id
+from models import User
 
 router = APIRouter(prefix="/ai", tags=["AI"])
 
@@ -15,9 +18,10 @@ def infer_direction(
     return ActionOutput(action=action)
 
 @router.post("/create_ai", response_model=AIBotResponse)
-def create_bot(
+def create_ai_bot_endpoint(
     bot_data: AIBotCreate,
-    db: Session = Depends(get_db_by_domain("AI_bot"))
+    db: Session = Depends(get_db("AI_bot")),
+    current_user: User = Depends(get_current_user_id),
 ):
-    bot = create_ai_bot(db, bot_data)
+    bot = create_ai_bot(db, bot_data, current_user.user_id)
     return bot
