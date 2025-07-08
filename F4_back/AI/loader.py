@@ -1,34 +1,23 @@
-try:
-    import torch
-    TORCH_AVAILABLE = True
-except Exception as e:
-    print(f"[경고] torch import 실패: {e}")
-    torch = None
-    TORCH_AVAILABLE = False
+import numpy as np
 
-from AI.dqn_model import DQN
+# npz 파일에서 가중치 불러오기
+weights = np.load("F4_back/AI/dqn_weights.npz")
 
-if TORCH_AVAILABLE:
-    try:
-        model = DQN(input_dim=4, output_dim=4)  # 입력/출력 차원은 실제 환경에 맞게 수정
-        model.load_state_dict(torch.load("tiniworm_dqn_model.pt", map_location=torch.device("cpu")))
-        model.eval()
-    except Exception as e:
-        print(f"[경고] torch 모델 로드 실패: {e}")
-        model = None
-else:
-    model = None
+# 각 레이어의 가중치와 편향
+W1, b1 = weights['W1'], weights['b1']
+W2, b2 = weights['W2'], weights['b2']
+W3, b3 = weights['W3'], weights['b3']
 
-def predict_direction(state):
-    if not TORCH_AVAILABLE or model is None:
-        print("[오류] torch 미설치 상태이거나 모델이 로드되지 않았습니다.")
-        return -1  # 기본 행동 리턴
+# ReLU 함수 정의
+def relu(x):
+    return np.maximum(0, x)
 
-    try:
-        with torch.no_grad():
-            state_tensor = torch.tensor(state, dtype=torch.float32)
-            q_values = model(state_tensor)
-            return int(torch.argmax(q_values).item())
-    except Exception as e:
-        print(f"[오류] 추론 중 문제 발생: {e}")
-        return -1
+# 추론 함수
+def predict_direction(state_x, state_y, player_x, player_y):
+    x = np.array([[state_x, state_y, player_x, player_y]])  # shape: (1, 4)
+
+    x = relu(np.dot(x, W1) + b1)
+    x = relu(np.dot(x, W2) + b2)
+    x = np.dot(x, W3) + b3
+
+    return int(np.argmax(x))  # 가장 높은 Q값의 인덱스를 행동으로 반환
