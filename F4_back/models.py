@@ -107,3 +107,19 @@ class BotLog(Base):
     boost = Column(Boolean, default=False)
     reward = Column(Float, default=0.0)
     event = Column(String(255), default="")
+
+    def to_dict(self):
+        return {
+            "bot_id": self.bot_id,
+            "game_session_id": self.game_session_id,
+            "step": self.step,
+            "state_x": self.state_x,
+            "state_y": self.state_y,
+            "player_x": self.player_x,
+            "player_y": self.player_y,
+            "action": self.action,
+            "boost": self.boost,
+            "reward": self.reward,
+            "event": self.event,
+            "timestamp": str(self.timestamp)
+        }
