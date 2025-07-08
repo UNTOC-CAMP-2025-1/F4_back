@@ -12,7 +12,7 @@ def decide_ai_action(state: StateInput) -> int:
 def create_ai_bot(db: Session, bot_data: AIBotCreate):
     bot = AI_bot(
         session_id=bot_data.session_id,
-        bot_name=bot_data.bot_name,
+        bot_id=bot_data.bot_id,
         bot_score=0,
         strategy_id=bot_data.strategy_id
     )

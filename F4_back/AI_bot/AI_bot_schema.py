@@ -11,7 +11,7 @@ class ActionOutput(BaseModel):
 
 class AIBotCreate(BaseModel):
     session_id: int
-    bot_name: str
+    bot_id: int
     strategy_id: int
 
 class AIBotResponse(BaseModel):
