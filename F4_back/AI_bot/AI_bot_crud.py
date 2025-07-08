@@ -14,7 +14,6 @@ def create_ai_bot(db: Session, bot_data: AIBotCreate):
         session_id=bot_data.session_id,
         bot_id=bot_data.bot_id,
         bot_score=0,
-        strategy_id=bot_data.strategy_id
     )
     db.add(bot)
     db.commit()
