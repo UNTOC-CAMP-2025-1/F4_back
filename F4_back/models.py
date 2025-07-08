@@ -96,7 +96,7 @@ class BotLog(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     bot_id = Column(Integer)
-    game_session_id = Column(Integer)
+    session_id = Column(Integer, ForeignKey("game_session.game_session.session_id"), nullable=False)
     step = Column(Integer)
     timestamp = Column(TIMESTAMP, default=func.current_timestamp())
     state_x = Column(Float)
