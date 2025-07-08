@@ -71,7 +71,7 @@ def end_session(
     bot_logs = get_bot_logs_by_session_id(db, session_id)
 
     # 3. 저장 디렉토리 확인 및 생성
-    dir_path = "/content/drive/MyDrive/bot_logs"
+    dir_path = "/home/yeondaaa/untocF4/F4_back/bot_logs"
     os.makedirs(dir_path, exist_ok=True)
 
     # 4. 파일 경로 설정 및 저장
