@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 class BotLogCreate(BaseModel):
     bot_id: int
+    session_id: int
     step: int
     state_x: float
     state_y: float
