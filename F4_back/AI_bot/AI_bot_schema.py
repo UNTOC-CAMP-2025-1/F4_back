@@ -8,3 +8,13 @@ class StateInput(BaseModel):
 
 class ActionOutput(BaseModel):
     action: int
+
+class AIBotCreate(BaseModel):
+    session_id: int
+    bot_name: str
+    strategy_id: int
+
+class AIBotResponse(BaseModel):
+    bot_id: int
+    session_id: int
+    bot_name: str
