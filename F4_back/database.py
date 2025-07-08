@@ -20,7 +20,7 @@ DBS = {
     "bot_character": os.environ.get("BOT_CHARACTER_DB_NAME"),
     "bot_strategy": os.environ.get("BOT_STRATEGY_DB_NAME"),
     "leader_board": os.environ.get("LEADER_BOARD_DB_NAME"),
-    "bot_log": os.environ.get("BOT_LOG"),
+    "bot_log": os.environ.get("BOT_LOG_DB_NAME"),
 }
 
 Base = declarative_base()
