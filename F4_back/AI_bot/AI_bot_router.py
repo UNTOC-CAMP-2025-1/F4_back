@@ -17,7 +17,7 @@ def infer_direction(
 @router.post("/create_ai", response_model=AIBotResponse)
 def create_bot(
     bot_data: AIBotCreate,
-    db: Session = Depends(get_db_by_domain("AI_bot"))
+    db: Session = Depends(get_db_by_domain("ai_bot"))
 ):
     bot = create_ai_bot(db, bot_data)
     return bot
