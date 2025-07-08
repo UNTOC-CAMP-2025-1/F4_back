@@ -2,10 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException, Header
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from database import get_db
+from models import Game_session
 from functools import partial
+from datetime import datetime
 from .game_session_schema import GameSessionCreate, GameSessionResponse
 from .game_session_crud import (
-    create_game_session, get_game_session_by_user, get_game_session_by_session, end_game_session
+    create_game_session, get_game_session_by_user, get_game_session_by_session
 )
 from user.auth import get_current_user_id
 from functools import partial
@@ -54,11 +56,15 @@ def read_session(
 @router.post("/end")
 def end_session(
     session_id: int,
-    user_score: int,
     db: Session = Depends(get_game_session_db)
 ):
-    # 1. 세션 종료 처리
-    end_game_session(db, session_id, user_score)
+    # 1. 세션 종료 처리 (user_score는 DB에 이미 존재한다고 가정)
+    session = db.query(Game_session).filter(Game_session.session_id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="해당 세션이 존재하지 않습니다.")
+
+    session.session_ended_at = datetime.now()
+    db.commit()
 
     # 2. 해당 세션의 bot_log 가져오기
     bot_logs = get_bot_logs_by_session_id(db, session_id)
