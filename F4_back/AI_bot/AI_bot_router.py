@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from AI_bot.AI_bot_schema import StateInput, ActionOutput
-from AI_bot.AI_bot_crud import decide_ai_action
+from AI_bot.AI_bot_schema import StateInput, ActionOutput, AIBotResponse
+from AI_bot.AI_bot_crud import decide_ai_action, AIBotCreate, create_ai_bot
 from AI_bot.util import get_db_by_domain
 
 router = APIRouter(prefix="/ai", tags=["AI"])
@@ -13,3 +13,11 @@ def infer_direction(
 ):
     action = decide_ai_action(state)
     return ActionOutput(action=action)
+
+@router.post("/", response_model=AIBotResponse)
+def create_bot(
+    bot_data: AIBotCreate,
+    db: Session = Depends(get_db_by_domain("AI_bot"))
+):
+    bot = create_ai_bot(db, bot_data)
+    return bot
