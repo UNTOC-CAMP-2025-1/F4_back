@@ -1,7 +1,7 @@
 import numpy as np
 
 # npz 파일에서 가중치 불러오기
-weights = np.load("F4_back/AI/dqn_weights.npz")
+weights = np.load("~/untocF4/F4_back/F4_back/AI/dqn_weights.npz")
 
 # 각 레이어의 가중치와 편향
 W1, b1 = weights['W1'], weights['b1']
