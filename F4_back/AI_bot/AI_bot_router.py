@@ -21,7 +21,7 @@ def infer_direction(
 def create_ai_bot_endpoint(
     bot_data: AIBotCreate,
     db: Session = Depends(get_db("AI_bot")),
-    current_user: User = Depends(get_current_user_id),
+    user_id: int = Depends(get_current_user_id),
 ):
-    bot = create_ai_bot(db, bot_data, current_user.user_id)
+    bot = create_ai_bot(db, bot_data, user_id.user_id)
     return bot
