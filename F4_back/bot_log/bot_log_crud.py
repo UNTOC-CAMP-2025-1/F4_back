@@ -1,9 +1,13 @@
 from models import BotLog, AI_bot
 from sqlalchemy.orm import Session
+from fastapi import HTTPException
 from bot_log.bot_log_schema import BotLogCreate
 
 def create_bot_log(db: Session, bot_log: BotLogCreate):
     bot = db.query(AI_bot).filter(AI_bot.bot_id == bot_log.bot_id).first()
+    if not bot:
+        raise HTTPException(status_code=404, detail=f"Bot with id {bot_log.bot_id} not found.")
+
     session_id = bot.session_id if bot else None
 
     db_bot_log = BotLog(
