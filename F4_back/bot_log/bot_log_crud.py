@@ -1,11 +1,11 @@
-from models import BotLog
+from models import BotLog, AI_bot
 from sqlalchemy.orm import Session
 from bot_log.bot_log_schema import BotLogCreate
 
 def create_bot_log(db: Session, bot_log: BotLogCreate):
     db_bot_log = BotLog(
         bot_id=bot_log.bot_id,
-        game_session_id=bot_log.game_session_id,
+        session_id=AI_bot.session_id,
         step=bot_log.step,
         state_x=bot_log.state_x,
         state_y=bot_log.state_y,
