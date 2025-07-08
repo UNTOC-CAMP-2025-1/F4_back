@@ -16,7 +16,7 @@ DBS = {
     "character": os.environ.get("CHARACTER_DB_NAME"),
     "user_character": os.environ.get("USER_CHARACTER_DB_NAME"),
     "game_session": os.environ.get("GAME_SESSION_CHARACTER_DB_NAME"),
-    "ai_bot": os.environ.get("AI_BOT_DB_NAME"),
+    "AI_bot": os.environ.get("AI_BOT_DB_NAME"),
     "bot_character": os.environ.get("BOT_CHARACTER_DB_NAME"),
     "bot_strategy": os.environ.get("BOT_STRATEGY_DB_NAME"),
     "leader_board": os.environ.get("LEADER_BOARD_DB_NAME"),
