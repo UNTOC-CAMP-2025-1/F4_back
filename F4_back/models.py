@@ -43,9 +43,7 @@ class AI_bot(Base):
     __table_args__ = {'schema': 'AI_bot'}
     bot_id = Column(Integer, primary_key=True)
     session_id = Column(Integer, ForeignKey("game_session.game_session.session_id"), nullable=False)
-    bot_name = Column(String(100))
-    bot_score = Column(Integer)
-    strategy_id = Column(Integer, ForeignKey("bot_strategy.bot_strategy.strategy_id"))
+    user_id = Column(Integer, ForeignKey("user.user.user_id"), nullable=False)
 
 # Leader_board 모델
 class Leader_board(Base):
