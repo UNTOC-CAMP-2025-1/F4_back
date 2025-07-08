@@ -9,13 +9,16 @@ def decide_ai_action(state: StateInput) -> int:
         state.player_x, state.player_y
     )
 
-def create_ai_bot(db: Session, bot_data: AIBotCreate):
+def create_ai_bot(db: Session, bot_data: AIBotCreate, user_id: int):
     bot = AI_bot(
         session_id=bot_data.session_id,
         bot_id=bot_data.bot_id,
-        bot_score=0,
+        user_id=user_id,
     )
     db.add(bot)
     db.commit()
     db.refresh(bot)
     return bot
+
+def get_bot_by_id(db: Session, bot_id: int):
+    return db.query(AI_bot).filter(AI_bot.bot_id == bot_id).first()
