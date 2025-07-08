@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from AI_bot.AI_bot_schema import StateInput, ActionOutput, AIBotResponse
-from AI_bot.AI_bot_crud import decide_ai_action, AIBotCreate, create_ai_bot
+from AI_bot.AI_bot_schema import StateInput, ActionOutput, AIBotResponse, AIBotCreate
+from AI_bot.AI_bot_crud import decide_ai_action, create_ai_bot
 from AI_bot.util import get_db_by_domain
 
 router = APIRouter(prefix="/ai", tags=["AI"])
