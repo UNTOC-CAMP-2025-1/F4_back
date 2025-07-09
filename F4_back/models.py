@@ -34,9 +34,7 @@ class Game_session(Base):
     session_id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("user.user.user_id"), nullable=False)
     user_score = Column(Integer)
-    session_started_at = Column(TIMESTAMP)
-    session_ended_at = Column(TIMESTAMP)
-
+    
 # AI_bot 모델
 class AI_bot(Base):
     __tablename__ = "AI_bot"
