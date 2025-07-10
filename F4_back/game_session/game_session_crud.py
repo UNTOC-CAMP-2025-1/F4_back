@@ -91,7 +91,7 @@ def notify_colab_to_train(session_id: int, log_data: list, user_id: int):
         payload = {
             "session_id": session_id,
             "user_id": user_id,
-            "logs": log_data,
+            "logs": log_data
         }
         print(f"\n[🔍] 로그 데이터 샘플 (총 {len(log_data)}개 중 상위 5개):")
         for i, log in enumerate(log_data[:5]):
