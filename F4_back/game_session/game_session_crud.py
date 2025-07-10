@@ -92,6 +92,10 @@ def notify_colab_to_train(session_id: int, log_data: list, user_id: int):
             "user_id": user_id,
             "logs": log_data  # 👈 JSON으로 변환된 로그 직접 전송
         }
+        print(f"\n[🔍] 로그 데이터 샘플 (총 {len(log_data)}개 중 상위 5개):")
+        for i, log in enumerate(log_data[:5]):
+            print(f"  {i+1}: {log}")
+
         response = requests.post(webhook_url, json=payload)
 
         if response.status_code != 200:
