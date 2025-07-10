@@ -11,8 +11,17 @@ def decide_ai_action(state: StateInput) -> int:
     )
 
 def create_ai_bot(db: Session, bot_data: AIBotCreate, user_id: int):
+    session = (
+        db.query(Game_session)
+        .filter(Game_session.user_id == user_id)
+        .order_by(Game_session.session_id.desc())
+        .first()
+    )
+    if not session:
+        raise HTTPException(status_code=404, detail="게임 세션을 찾을 수 없습니다.")
+    
     new_bot = AI_bot(
-        session_id=bot_data.session_id,
+        session_id=session.session_id,
         bot_number=bot_data.bot_number,
         user_id=user_id
     )

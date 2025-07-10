@@ -10,7 +10,6 @@ class ActionOutput(BaseModel):
     action: int
 
 class AIBotCreate(BaseModel):
-    session_id: int
     bot_number: int
 
 class AIBotResponse(BaseModel):
