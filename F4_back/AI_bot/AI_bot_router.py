@@ -22,5 +22,5 @@ def create_ai_bot_endpoint(
     db: Session = Depends(get_db_by_domain("AI_bot")),
     user_id: int = Depends(get_current_user_id),
 ):
-    bot = create_ai_bot(db, bot_data, user_id.user_id)
+    bot = create_ai_bot(db, bot_data, user_id=user_id)
     return bot
