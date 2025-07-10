@@ -11,14 +11,6 @@ import os
 router = APIRouter(prefix="/ai", tags=["AI"])
 get_ai_bot_db = partial(get_db, domain="ai_bot")
 
-@router.post("/infer", response_model=ActionOutput)
-def infer_direction(
-    state: StateInput,
-    db: Session = Depends(get_db_by_domain("bot_log")) 
-):
-    action = decide_ai_action(state)
-    return ActionOutput(action=action)
-
 @router.post("/create_ai", response_model=AIBotResponse)
 def create_ai_bot_endpoint(
     bot_data: AIBotCreate,

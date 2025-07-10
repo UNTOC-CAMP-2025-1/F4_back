@@ -4,13 +4,6 @@ from models import AI_bot, Game_session
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-def decide_ai_action(state: StateInput) -> int:
-    return predict_direction(
-        state.state_x, state.state_y,
-        state.player_x, state.player_y,
-        state.boost
-    )
-
 def create_ai_bot(db: Session, bot_data: AIBotCreate, user_id: int):
     session = (
         db.query(Game_session)
