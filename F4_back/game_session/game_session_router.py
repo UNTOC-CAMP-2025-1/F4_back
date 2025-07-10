@@ -100,3 +100,12 @@ def download_log(session_id: int):
     if not os.path.exists(path):
         raise HTTPException(status_code=404, detail="로그 파일 없음")
     return FileResponse(path, media_type='application/json', filename=f"session_{session_id}.json")
+
+def notify_colab_to_train(session_id: int):
+    webhook_url = "https://afe51642afd7.ngrok-free.app/train"
+    try:
+        response = requests.post(webhook_url, json={"session_id": session_id})
+        print(f"[✅] Colab에 학습 요청 완료: 세션 {session_id}")
+        print("응답:", response.status_code, response.json())
+    except Exception as e:
+        print(f"[❌] Colab 학습 요청 실패: {e}")
