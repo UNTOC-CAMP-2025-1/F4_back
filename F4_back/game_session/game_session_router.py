@@ -70,11 +70,20 @@ def start_game_session(
 
 @router.post("/end")
 def end_session(
-    session_id: int,
     db: Session = Depends(get_game_session_db),
     user_id: int = Depends(get_current_user_id)
 ):
-    result = end_game_session(session_id, db, user_id)
+    # 여기서 최근 session_id 조회
+    session = (
+        db.query(Game_session)
+        .filter(Game_session.user_id == user_id)
+        .order_by(Game_session.created_at.desc())
+        .first()
+    )
+    if not session:
+        raise HTTPException(status_code=404, detail="최근 세션을 찾을 수 없습니다.")
+    
+    result = end_game_session(session.session_id, db, user_id)
     if "error" in result:
         raise HTTPException(status_code=404, detail=result["error"])
     return result
