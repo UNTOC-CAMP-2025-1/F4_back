@@ -10,6 +10,7 @@ from bot_character.bot_character_router import router as bot_character_router
 from bot_log.bot_log_router import router as bot_log_router
 from AI_bot.AI_bot_router import router as AI_bot_router
 from fastapi import FastAPI, Request
+import os
 
 app = FastAPI()
 
@@ -21,15 +22,22 @@ async def update_env(request: Request):
     if not ngrok_url:
         return {"error": "ngrok_url is missing"}
     
-    # .env 수정 (예시: COLAB_WEBHOOK_URL 갱신)
+    # .env 수정
     with open(".env", "r") as f:
         lines = f.readlines()
     with open(".env", "w") as f:
+        updated = False
         for line in lines:
             if line.startswith("COLAB_WEBHOOK_URL="):
                 f.write(f"COLAB_WEBHOOK_URL={ngrok_url}\n")
+                updated = True
             else:
                 f.write(line)
+        if not updated:
+            f.write(f"COLAB_WEBHOOK_URL={ngrok_url}\n")  # 없었으면 새로 추가
+
+    # ✅ 실시간 환경변수 반영
+    os.environ["COLAB_WEBHOOK_URL"] = ngrok_url
 
     print(f"✅ 새로운 ngrok 주소로 갱신됨: {ngrok_url}")
     return {"message": "환경변수 업데이트 완료"}
