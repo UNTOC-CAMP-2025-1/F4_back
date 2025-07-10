@@ -75,7 +75,7 @@ def end_game_session(session_id: int, db: Session, user_id: int):
         json.dump(log_data, f, indent=2)
 
     # 5. Colab으로 학습 요청 전송
-    notify_colab_to_train(session_id, session.user_id, log_data)
+    notify_colab_to_train(session_id, log_data, session.user_id)
 
     return {"message": "세션 종료 및 로그 저장 + Colab 학습 요청 완료", 
             "log_path": save_path}
