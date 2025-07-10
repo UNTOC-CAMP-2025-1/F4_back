@@ -42,6 +42,7 @@ class AI_bot(Base):
     bot_id = Column(Integer, primary_key=True)
     session_id = Column(Integer, ForeignKey("game_session.game_session.session_id"), nullable=False)
     user_id = Column(Integer, ForeignKey("user.user.user_id"), nullable=False)
+    bot_number = Column(Integer)
 
 # Leader_board 모델
 class Leader_board(Base):

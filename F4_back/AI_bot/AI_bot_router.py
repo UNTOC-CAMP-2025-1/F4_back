@@ -4,9 +4,12 @@ from AI_bot.AI_bot_schema import StateInput, ActionOutput, AIBotResponse, AIBotC
 from AI_bot.AI_bot_crud import decide_ai_action, create_ai_bot
 from AI_bot.util import get_db_by_domain
 from user.auth import get_current_user_id
-from models import User
+from models import AI_bot
+from database import get_db
+from functools import partial
 
 router = APIRouter(prefix="/ai", tags=["AI"])
+get_ai_bot_db = partial(get_db, domain="ai_bot")
 
 @router.post("/infer", response_model=ActionOutput)
 def infer_direction(
