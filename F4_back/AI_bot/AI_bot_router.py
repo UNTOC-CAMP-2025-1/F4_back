@@ -28,7 +28,7 @@ def create_ai_bot_endpoint(
     bot = create_ai_bot(db, bot_data, user_id=user_id)
     return bot
 
-@router.post("/ai/upload_weights")
+@router.post("/upload_weights")
 async def upload_weights(file: UploadFile = File(...)):
     save_path = "./AI/weights/dqn_weights.npz"
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
