@@ -77,7 +77,7 @@ def end_session(
     session = (
         db.query(Game_session)
         .filter(Game_session.user_id == user_id)
-        .order_by(Game_session.created_at.desc())
+        .order_by(Game_session.session_id.desc())
         .first()
     )
     if not session:
