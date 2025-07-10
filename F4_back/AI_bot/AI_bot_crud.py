@@ -1,5 +1,4 @@
-from AI.loader import predict_direction
-from AI_bot.AI_bot_schema import StateInput, AIBotCreate
+from AI_bot.AI_bot_schema import AIBotCreate
 from models import AI_bot, Game_session
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
