@@ -42,18 +42,19 @@ def get_game_session_by_session(db: Session, session_id: int):
 
 # ✅ 게임 종료 및 로그 저장 → Colab 학습 요청 포함
 def end_game_session(session_id: int, db: Session):
-    # 1. 게임 종료 시간 기록
+    # 1. 세션 유효성 검사
     session = db.query(Game_session).filter(Game_session.session_id == session_id).first()
     if not session:
         return {"error": "Session not found"}
     
-    session.session_ended_at = datetime.utcnow()
-    db.commit()
-
     # 2. 해당 세션의 bot_log 불러오기
-    bot_logs = db.query(BotLog).filter(BotLog.game_session_id == session_id).all()
+    bot_logs = db.query(BotLog).filter(BotLog.session_id == session_id).all()
 
-    # 3. 딕셔너리 형태로 변환
+    # 3. 저장 디렉토리 확인 및 생성
+    dir_path = "/home/yeondaaa/untocF4/F4_back/bot_logs"
+    os.makedirs(dir_path, exist_ok=True)
+
+    # 4. 로그 변환 및 JSON 저장
     log_data = [{
         "step": log.step,
         "state_x": log.state_x,
@@ -66,25 +67,34 @@ def end_game_session(session_id: int, db: Session):
         "event": log.event,
     } for log in bot_logs]
 
-    # 4. JSON으로 저장 (Colab이 읽을 수 있는 위치 추천)
-    save_path = f"./AI/logs/session_{session_id}.json"
-    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    # 4. JSON으로 저장
+    save_path = f"{dir_path}/session_{session_id}.json"
     with open(save_path, "w") as f:
         json.dump(log_data, f, indent=2)
 
     # 5. Colab으로 학습 요청 전송
     notify_colab_to_train(session_id, log_data)
 
-    return {"message": "세션 종료 및 로그 저장 완료", "log_path": save_path}
+    return {"message": "세션 종료 및 로그 저장 + Colab 학습 요청 완료", 
+            "log_path": save_path}
 
 def notify_colab_to_train(session_id: int, log_data: list):
     webhook_url = os.getenv("COLAB_WEBHOOK_URL")
+    if not webhook_url:
+        print("[❌] COLAB_WEBHOOK_URL 환경변수가 설정되지 않았습니다.")
+        return
+
     try:
         payload = {
             "session_id": session_id,
             "logs": log_data  # 👈 JSON으로 변환된 로그 직접 전송
         }
         response = requests.post(webhook_url, json=payload)
+
+        if response.status_code != 200:
+            print(f"[❌] Colab 학습 요청 실패: {response.status_code} - {response.text}")
+            return
+        
         print(f"[✅] Colab에 학습 요청 완료: 세션 {session_id}")
         print("응답:", response.status_code, response.json())
     except Exception as e:

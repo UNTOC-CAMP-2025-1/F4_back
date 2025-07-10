@@ -8,7 +8,8 @@ from functools import partial
 from datetime import datetime
 from .game_session_schema import GameSessionCreate, GameSessionResponse, GameSessionStartResponse
 from .game_session_crud import (
-    get_game_session_by_user, get_game_session_by_session, update_latest_game_session_score
+    get_game_session_by_user, get_game_session_by_session, update_latest_game_session_score,
+    end_game_session
 )
 from user.auth import get_current_user_id
 from functools import partial
@@ -72,27 +73,10 @@ def end_session(
     session_id: int,
     db: Session = Depends(get_game_session_db)
 ):
-    # 1. 세션 종료 처리 (user_score는 DB에 이미 존재한다고 가정)
-    session = db.query(Game_session).filter(Game_session.session_id == session_id).first()
-    if not session:
-        raise HTTPException(status_code=404, detail="해당 세션이 존재하지 않습니다.")
-
-    session.session_ended_at = datetime.now()
-    db.commit()
-
-    # 2. 해당 세션의 bot_log 가져오기
-    bot_logs = get_bot_logs_by_session_id(db, session_id)
-
-    # 3. 저장 디렉토리 확인 및 생성
-    dir_path = "/home/yeondaaa/untocF4/F4_back/bot_logs"
-    os.makedirs(dir_path, exist_ok=True)
-
-    # 4. 파일 경로 설정 및 저장
-    save_path = f"{dir_path}/session_{session_id}.json"
-    with open(save_path, "w") as f:
-        json.dump([log.to_dict() for log in bot_logs], f)
-
-    return {"message": "세션 종료 및 로그 저장 완료"}
+    result = end_game_session(session_id, db)
+    if "error" in result:
+        raise HTTPException(status_code=404, detail=result["error"])
+    return result
 
 @router.get("/download_log/{session_id}")
 def download_log(session_id: int):
