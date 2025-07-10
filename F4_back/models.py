@@ -92,8 +92,8 @@ class BotLog(Base):
     __tablename__ = "bot_log"
     __table_args__ = {'schema': 'bot_log'}
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    bot_id = Column(Integer)
+    bot_id = Column(Integer, primary_key=True, autoincrement=True)
+    bot_number = Column(Integer, nullable=False)
     session_id = Column(Integer, ForeignKey("game_session.game_session.session_id"), nullable=False)
     step = Column(Integer)
     timestamp = Column(TIMESTAMP, default=func.current_timestamp())
@@ -108,7 +108,7 @@ class BotLog(Base):
 
     def to_dict(self):
         return {
-            "bot_id": self.bot_id,
+            "bot_number": self.bot_number,
             "session_id": self.session_id,
             "step": self.step,
             "state_x": self.state_x,
