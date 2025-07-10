@@ -85,3 +85,15 @@ def download_log(session_id: int):
     if not os.path.exists(path):
         raise HTTPException(status_code=404, detail="로그 파일 없음")
     return FileResponse(path, media_type='application/json', filename=f"session_{session_id}.json")
+
+@router.get("/latest/{user_id}")
+def get_latest_session(user_id: int, db: Session = Depends(get_db)):
+    session = (
+        db.query(Game_session)
+        .filter(Game_session.user_id == user_id)
+        .order_by(Game_session.created_at.desc())
+        .first()
+    )
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return {"session_id": session.session_id}
