@@ -2,7 +2,6 @@ from sqlalchemy.orm import Session
 from models import Game_session, BotLog
 from .game_session_schema import GameSessionCreate
 from fastapi import HTTPException
-from datetime import datetime
 import json, os, requests
 
 from dotenv import load_dotenv
@@ -76,12 +75,12 @@ def end_game_session(session_id: int, db: Session, user_id: int):
         json.dump(log_data, f, indent=2)
 
     # 5. Colab으로 학습 요청 전송
-    notify_colab_to_train(session_id, log_data)
+    notify_colab_to_train(session_id, session.user_id, log_data)
 
     return {"message": "세션 종료 및 로그 저장 + Colab 학습 요청 완료", 
             "log_path": save_path}
 
-def notify_colab_to_train(session_id: int, log_data: list):
+def notify_colab_to_train(session_id: int, log_data: list, user_id: int):
     webhook_url = os.getenv("COLAB_WEBHOOK_URL")
     if not webhook_url:
         print("[❌] COLAB_WEBHOOK_URL 환경변수가 설정되지 않았습니다.")
@@ -90,6 +89,7 @@ def notify_colab_to_train(session_id: int, log_data: list):
     try:
         payload = {
             "session_id": session_id,
+            "user_id": user_id,
             "logs": log_data  # 👈 JSON으로 변환된 로그 직접 전송
         }
         response = requests.post(webhook_url, json=payload)
