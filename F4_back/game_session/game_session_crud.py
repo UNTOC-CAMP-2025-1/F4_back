@@ -3,7 +3,6 @@ from models import Game_session, BotLog
 from .game_session_schema import GameSessionCreate
 from fastapi import HTTPException
 import json, os, requests
-from user.auth import create_access_token
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -84,7 +83,6 @@ def end_game_session(session_id: int, db: Session, user_id: int):
 
 def notify_colab_to_train(session_id: int, log_data: list, user_id: int):
     webhook_url = os.getenv("COLAB_WEBHOOK_URL")
-    access_token = create_access_token({"sub": str(user_id)})
     if not webhook_url:
         print("[❌] COLAB_WEBHOOK_URL 환경변수가 설정되지 않았습니다.")
         return
@@ -94,7 +92,6 @@ def notify_colab_to_train(session_id: int, log_data: list, user_id: int):
             "session_id": session_id,
             "user_id": user_id,
             "logs": log_data,
-            "access_token": access_token 
         }
         print(f"\n[🔍] 로그 데이터 샘플 (총 {len(log_data)}개 중 상위 5개):")
         for i, log in enumerate(log_data[:5]):

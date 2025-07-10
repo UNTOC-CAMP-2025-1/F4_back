@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Body
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from AI_bot.AI_bot_schema import AIBotResponse, AIBotCreate
@@ -25,7 +25,7 @@ security = HTTPBearer()
 
 @router.post("/upload_weights")
 def upload_ai_weights(
-    weights: dict = Body(...) ,
+    weights: dict,
     authorization: HTTPAuthorizationCredentials = Depends(security)
 ):
     token = authorization.credentials
