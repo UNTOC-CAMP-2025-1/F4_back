@@ -5,6 +5,9 @@ from fastapi import HTTPException
 from datetime import datetime
 import json, os, requests
 
+from dotenv import load_dotenv
+load_dotenv()
+
 def update_latest_game_session_score(
     db: Session, user_id: int, session_data: GameSessionCreate
 ):
@@ -70,12 +73,12 @@ def end_game_session(session_id: int, db: Session):
         json.dump(log_data, f, indent=2)
 
     # 5. Colab으로 학습 요청 전송
-    notify_colab_to_train(session_id)
+    notify_colab_to_train(session_id, log_data)
 
     return {"message": "세션 종료 및 로그 저장 완료", "log_path": save_path}
 
 def notify_colab_to_train(session_id: int, log_data: list):
-    webhook_url = "https://afe51642afd7.ngrok-free.app/train"
+    webhook_url = os.getenv("COLAB_WEBHOOK_URL")
     try:
         payload = {
             "session_id": session_id,

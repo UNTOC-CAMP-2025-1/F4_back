@@ -18,13 +18,8 @@ def relu(x):
 def predict_direction(state_x, state_y, player_x, player_y, boost):
     weights = np.load("AI/weights/dqn_weights.npz")
 
-    # 간단한 추론 (예시) — 가장 높은 가중치 index 반환
-    # 실제로는 Colab에서 이 추론을 실행해야 함 (혹은 numpy만 쓰는 로직이면 OK)
-    q_values = (
-        weights["w1"] * state_x +
-        weights["w2"] * state_y +
-        weights["w3"] * player_x +
-        weights["w4"] * player_y +
-        weights["w5"] * boost
-    )  # shape: (action_dim,)
+    W = weights["W"]  # shape: (8, 5) → 8 actions, 5 input dims
+
+    state_vec = np.array([state_x, state_y, player_x, player_y, boost])  # shape: (5,)
+    q_values = np.dot(W, state_vec)  # shape: (8,)
     return int(np.argmax(q_values))
