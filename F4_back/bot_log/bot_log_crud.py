@@ -48,7 +48,7 @@ def create_bot_logs(db: Session, user_id: int, raw_logs: List[dict]):
         )
         db.add(new_log)
         db.flush()
-        log_ids.append(new_log.id)
+        log_ids.append(new_log.bot_id)
 
     db.commit()
     return {"message": f"{len(log_ids)}개의 로그 저장 완료", "log_ids": log_ids}
