@@ -40,6 +40,7 @@ class AI_bot(Base):
     __tablename__ = "AI_bot"
     __table_args__ = {'schema': 'AI_bot'}
     bot_id = Column(Integer, primary_key=True)
+    bot_number = Column(Integer, nullable=False)
     session_id = Column(Integer, ForeignKey("game_session.game_session.session_id"), nullable=False)
     user_id = Column(Integer, ForeignKey("user.user.user_id"), nullable=False)
     bot_number = Column(Integer)

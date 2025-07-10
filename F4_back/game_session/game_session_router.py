@@ -5,7 +5,7 @@ from database import get_db
 from models import Game_session
 from functools import partial
 from datetime import datetime
-from .game_session_schema import GameSessionCreate, GameSessionResponse
+from .game_session_schema import GameSessionCreate, GameSessionResponse, GameSessionStartResponse
 from .game_session_crud import (
     create_game_session, get_game_session_by_user, get_game_session_by_session
 )
@@ -53,6 +53,20 @@ def read_session(
     if not session:
         raise HTTPException(status_code=404, detail="세션을 찾을 수 없습니다.")
     return session
+
+@router.post("/start", response_model=GameSessionStartResponse)
+def start_game_session(
+    db: Session = Depends(get_game_session_db),
+    user_id: int = Depends(get_current_user_id)
+):
+    new_session = Game_session(user_id=user_id, user_score=0)
+    db.add(new_session)
+    db.commit()
+    db.refresh(new_session)
+    return {
+        "session_id": new_session.session_id,
+        "user_id": user_id
+    }
 
 @router.post("/end")
 def end_session(

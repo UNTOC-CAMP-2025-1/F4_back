@@ -4,14 +4,14 @@ from fastapi import HTTPException
 from bot_log.bot_log_schema import BotLogCreate
 
 def create_bot_log(db: Session, bot_log: BotLogCreate):
-    bot = db.query(AI_bot).filter(AI_bot.bot_id == bot_log.bot_id).first()
+    bot = db.query(AI_bot).filter(AI_bot.bot_name == bot_log.bot_name).first()
     if not bot:
-        raise HTTPException(status_code=404, detail=f"Bot with id {bot_log.bot_id} not found.")
+        raise HTTPException(status_code=404, detail=f"Bot with id {bot_log.bot_name} not found.")
 
     session_id = bot.session_id if bot else None
 
     db_bot_log = BotLog(
-        bot_id=bot_log.bot_id,
+        bot_name=bot_log.bot_name,
         session_id=session_id,
         step=bot_log.step,
         state_x=bot_log.state_x,

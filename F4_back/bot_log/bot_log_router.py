@@ -46,7 +46,7 @@ def log_batch_data(
     for bot in bots:
         for log in valid_logs:
             new_log = BotLog(
-                bot_id=bot.bot_id,
+                bot_name=bot.bot_name,
                 session_id=session.session_id,
                 step=log.step,
                 state_x=log.state_x,

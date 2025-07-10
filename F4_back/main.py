@@ -28,7 +28,7 @@ app.include_router(game_session_router, prefix="/game_session", tags=["GameSessi
 app.include_router(leader_board_router, prefix="/leader_board", tags=["LeaderBoard"])
 app.include_router(bot_character_router, prefix="/bot_character", tags=["BotCharacter"])
 app.include_router(bot_log_router, prefix="/bot_log", tags=["BotLog"])
-app.include_router(AI_bot_router, prefix="/AI_bot", tags=["AIbot"])
+app.include_router(AI_bot_router, prefix="/AI_bot", tags=["AIBot"])
 #app.include_router(AI_router, prefix="/AI", tags=["AI"])
 
 if __name__ == "__main__":

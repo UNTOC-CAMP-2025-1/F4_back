@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 class BotLogCreate(BaseModel):
+    bot_number: int
     step: int
     state_x: float
     state_y: float

@@ -10,4 +10,7 @@ class GameSessionResponse(BaseModel):
 
     class Config:
         orm_mode = True
-        
+
+class GameSessionStartResponse(BaseModel):
+    session_id: int
+    user_id: int
