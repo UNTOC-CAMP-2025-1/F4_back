@@ -1,5 +1,6 @@
 import numpy as np
-import os
+import os, torch
+from .dqn_model import DQN
 
 # npz 파일에서 가중치 불러오기
 base_dir = os.path.dirname(__file__)
@@ -23,3 +24,15 @@ def predict_direction(state_x, state_y, player_x, player_y):
     x = np.dot(x, w3) + b3
 
     return int(np.argmax(x))  # 가장 높은 Q값의 인덱스를 행동으로 반환
+
+def predict_direction(state):
+    weights = np.load("AI/weights/dqn_weights.npz")
+    model = DQN()
+    model.load_state_dict({k: torch.tensor(v) for k, v in weights.items()})
+    model.eval()
+
+    state = torch.tensor(state, dtype=torch.float32).unsqueeze(0)
+    with torch.no_grad():
+        q_values = model(state)
+        action = q_values.argmax().item()
+    return action
