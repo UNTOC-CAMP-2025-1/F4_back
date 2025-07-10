@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, Header
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import FileResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from database import get_db
@@ -92,3 +93,10 @@ def end_session(
         json.dump([log.to_dict() for log in bot_logs], f)
 
     return {"message": "세션 종료 및 로그 저장 완료"}
+
+@router.get("/download_log/{session_id}")
+def download_log(session_id: int):
+    path = f"/home/yeondaaa/untocF4/F4_back/bot_logs/session_{session_id}.json"
+    if not os.path.exists(path):
+        raise HTTPException(status_code=404, detail="로그 파일 없음")
+    return FileResponse(path, media_type='application/json', filename=f"session_{session_id}.json")
