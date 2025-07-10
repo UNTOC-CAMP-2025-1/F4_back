@@ -1,12 +1,12 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile, File
 from sqlalchemy.orm import Session
 from AI_bot.AI_bot_schema import StateInput, ActionOutput, AIBotResponse, AIBotCreate
 from AI_bot.AI_bot_crud import decide_ai_action, create_ai_bot
 from AI_bot.util import get_db_by_domain
 from user.auth import get_current_user_id
-from models import AI_bot
 from database import get_db
 from functools import partial
+import os
 
 router = APIRouter(prefix="/ai", tags=["AI"])
 get_ai_bot_db = partial(get_db, domain="ai_bot")
@@ -27,3 +27,14 @@ def create_ai_bot_endpoint(
 ):
     bot = create_ai_bot(db, bot_data, user_id=user_id)
     return bot
+
+@router.post("/ai/upload_weights")
+async def upload_weights(file: UploadFile = File(...)):
+    save_path = "./AI/weights/dqn_weights.npz"
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+
+    with open(save_path, "wb") as f:
+        content = await file.read()
+        f.write(content)
+
+    return {"message": "모델 가중치 업로드 완료"}
