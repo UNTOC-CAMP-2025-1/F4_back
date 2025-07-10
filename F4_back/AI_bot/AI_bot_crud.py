@@ -2,6 +2,8 @@ from AI_bot.AI_bot_schema import AIBotCreate
 from models import AI_bot, Game_session
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+import os
+import numpy as np
 
 def create_ai_bot(db: Session, bot_data: AIBotCreate, user_id: int):
     session = (
@@ -25,3 +27,13 @@ def create_ai_bot(db: Session, bot_data: AIBotCreate, user_id: int):
 
 def get_bot_by_id(db: Session, bot_id: int):
     return db.query(AI_bot).filter(AI_bot.bot_id == bot_id).first()
+
+def upload_weights(user_id: int, weights_data: dict):
+    save_dir = f"./AI/weights/user_{user_id}"
+    os.makedirs(save_dir, exist_ok=True)
+    
+    save_path = os.path.join(save_dir, "dqn_weights.npz")
+    np.savez(save_path, **weights_data)
+    
+    print(f"[✅] Saved weights to {save_path}")
+    return {"message": "Weights uploaded successfully", "path": save_path}

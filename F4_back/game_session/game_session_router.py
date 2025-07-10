@@ -71,9 +71,10 @@ def start_game_session(
 @router.post("/end")
 def end_session(
     session_id: int,
-    db: Session = Depends(get_game_session_db)
+    db: Session = Depends(get_game_session_db),
+    user_id: int = Depends(get_current_user_id)
 ):
-    result = end_game_session(session_id, db)
+    result = end_game_session(session_id, db, user_id)
     if "error" in result:
         raise HTTPException(status_code=404, detail=result["error"])
     return result

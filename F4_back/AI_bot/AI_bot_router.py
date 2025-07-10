@@ -6,7 +6,7 @@ from AI_bot.util import get_db_by_domain
 from user.auth import get_current_user_id
 from database import get_db
 from functools import partial
-import os
+from AI_bot.AI_bot_crud import upload_weights
 
 router = APIRouter(prefix="/ai", tags=["AI"])
 get_ai_bot_db = partial(get_db, domain="ai_bot")
@@ -21,12 +21,8 @@ def create_ai_bot_endpoint(
     return bot
 
 @router.post("/upload_weights")
-async def upload_weights(file: UploadFile = File(...)):
-    save_path = "./AI/weights/dqn_weights.npz"
-    os.makedirs(os.path.dirname(save_path), exist_ok=True)
-
-    with open(save_path, "wb") as f:
-        content = await file.read()
-        f.write(content)
-
-    return {"message": "모델 가중치 업로드 완료"}
+def upload_ai_weights(
+    weights: dict,
+    user_id: int = Depends(get_current_user_id)
+):
+    return upload_weights(user_id, weights)

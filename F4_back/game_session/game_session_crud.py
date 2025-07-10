@@ -41,18 +41,20 @@ def get_game_session_by_session(db: Session, session_id: int):
     return game_session
 
 # ✅ 게임 종료 및 로그 저장 → Colab 학습 요청 포함
-def end_game_session(session_id: int, db: Session):
+def end_game_session(session_id: int, db: Session, user_id: int):
     # 1. 세션 유효성 검사
-    session = db.query(Game_session).filter(Game_session.session_id == session_id).first()
+    session = db.query(Game_session).filter(
+        Game_session.session_id == session_id,
+        Game_session.user_id == user_id
+        ).first()
     if not session:
-        return {"error": "Session not found"}
+        return {"error": "Session not found or unauthorized"}
     
     # 2. 해당 세션의 bot_log 불러오기
     bot_logs = db.query(BotLog).filter(BotLog.session_id == session_id).all()
 
     # 3. 저장 디렉토리 확인 및 생성
     dir_path = "/home/yeondaaa/untocF4/F4_back/bot_logs"
-    os.makedirs(dir_path, exist_ok=True)
 
     # 4. 로그 변환 및 JSON 저장
     log_data = [{
@@ -69,6 +71,7 @@ def end_game_session(session_id: int, db: Session):
 
     # 4. JSON으로 저장
     save_path = f"{dir_path}/session_{session_id}.json"
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
     with open(save_path, "w") as f:
         json.dump(log_data, f, indent=2)
 
