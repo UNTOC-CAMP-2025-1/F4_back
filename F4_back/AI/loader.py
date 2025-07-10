@@ -1,5 +1,5 @@
 import numpy as np
-import os, torch
+import os
 from .dqn_model import DQN
 
 # npz 파일에서 가중치 불러오기
@@ -15,24 +15,16 @@ w3, b3 = weights["w3"], weights["b3"]
 def relu(x):
     return np.maximum(0, x)
 
-# 추론 함수
-def predict_direction(state_x, state_y, player_x, player_y):
-    x = np.array([[state_x, state_y, player_x, player_y]])  # shape: (1, 4)
-
-    x = relu(np.dot(x, w1) + b1)
-    x = relu(np.dot(x, w2) + b2)
-    x = np.dot(x, w3) + b3
-
-    return int(np.argmax(x))  # 가장 높은 Q값의 인덱스를 행동으로 반환
-
-def predict_direction(state):
+def predict_direction(state_x, state_y, player_x, player_y, boost):
     weights = np.load("AI/weights/dqn_weights.npz")
-    model = DQN()
-    model.load_state_dict({k: torch.tensor(v) for k, v in weights.items()})
-    model.eval()
 
-    state = torch.tensor(state, dtype=torch.float32).unsqueeze(0)
-    with torch.no_grad():
-        q_values = model(state)
-        action = q_values.argmax().item()
-    return action
+    # 간단한 추론 (예시) — 가장 높은 가중치 index 반환
+    # 실제로는 Colab에서 이 추론을 실행해야 함 (혹은 numpy만 쓰는 로직이면 OK)
+    q_values = (
+        weights["w1"] * state_x +
+        weights["w2"] * state_y +
+        weights["w3"] * player_x +
+        weights["w4"] * player_y +
+        weights["w5"] * boost
+    )  # shape: (action_dim,)
+    return int(np.argmax(q_values))
