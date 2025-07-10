@@ -1,14 +1,14 @@
 # F4
 
-
+<br>
 ## *🐍 TINIWORM Backend*
 
 **TINIWORM은 slither.io 스타일의 멀티플레이어 뱀 게임으로, 사용자와 AI 봇이 함께 플레이하며 AI는 게임 결과를 바탕으로 학습합니다. 그냥 뱀이 아니라 유행에 맞추어 티니핑 캐릭터를 사용하였습니다. 이 레포지토리에는 게임의 백엔드 관련 내용이 들어 있습니다.**
 
-<br><br>
+<br>
 
-### 🌟 기술 스택
-Framework: FastAPI
+### 🌟 기술 스택 <br>
+Framework: FastAPI <br>
 Database: MySQL (도메인별 분리된 DB 구조)
 ORM: SQLAlchemy
 인증/보안: JWT, OAuth2 with Bearer Token
