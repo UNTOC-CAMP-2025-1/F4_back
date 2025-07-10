@@ -2,7 +2,6 @@ from sqlalchemy.orm import Session
 from models import Game_session, BotLog
 from .game_session_schema import GameSessionCreate
 from fastapi import HTTPException
-from datetime import datetime
 import json, os, requests
 
 from dotenv import load_dotenv
