@@ -9,7 +9,41 @@ from leader_board.leader_board_router import router as leader_board_router
 from bot_character.bot_character_router import router as bot_character_router
 from bot_log.bot_log_router import router as bot_log_router
 from AI_bot.AI_bot_router import router as AI_bot_router
-#from AI.bot_decide import router as AI_router
+from flask import Flask, request
+import os
+
+app = Flask(__name__)
+
+@app.route("/update-env", methods=["POST"])
+def update_env():
+    data = request.get_json()
+    new_url = data.get("COLAB_WEBHOOK_URL")
+
+    if not new_url:
+        return {"error": "COLAB_WEBHOOK_URL 누락됨"}, 400
+
+    # .env 파일 갱신
+    lines = []
+    env_path = ".env"
+    if os.path.exists(env_path):
+        with open(env_path, "r") as f:
+            lines = f.readlines()
+
+    updated = False
+    for i, line in enumerate(lines):
+        if line.startswith("COLAB_WEBHOOK_URL="):
+            lines[i] = f"COLAB_WEBHOOK_URL={new_url}\n"
+            updated = True
+            break
+
+    if not updated:
+        lines.append(f"COLAB_WEBHOOK_URL={new_url}\n")
+
+    with open(env_path, "w") as f:
+        f.writelines(lines)
+
+    print(f"✅ COLAB_WEBHOOK_URL 갱신됨: {new_url}")
+    return {"message": "env 갱신 완료"}, 200
 
 app = FastAPI()
 
@@ -29,7 +63,6 @@ app.include_router(leader_board_router, prefix="/leader_board", tags=["LeaderBoa
 app.include_router(bot_character_router, prefix="/bot_character", tags=["BotCharacter"])
 app.include_router(bot_log_router, prefix="/bot_log", tags=["BotLog"])
 app.include_router(AI_bot_router, prefix="/AI_bot", tags=["AIBot"])
-#app.include_router(AI_router, prefix="/AI", tags=["AI"])
 
 if __name__ == "__main__":
     import uvicorn
