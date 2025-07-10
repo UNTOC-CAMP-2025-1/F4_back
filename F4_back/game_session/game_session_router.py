@@ -71,9 +71,10 @@ def start_game_session(
 @router.post("/end")
 def end_session(
     session_id: int,
-    db: Session = Depends(get_game_session_db)
+    db: Session = Depends(get_game_session_db),
+    user_id: int = Depends(get_current_user_id)
 ):
-    result = end_game_session(session_id, db)
+    result = end_game_session(session_id, db, user_id)
     if "error" in result:
         raise HTTPException(status_code=404, detail=result["error"])
     return result
@@ -84,3 +85,15 @@ def download_log(session_id: int):
     if not os.path.exists(path):
         raise HTTPException(status_code=404, detail="로그 파일 없음")
     return FileResponse(path, media_type='application/json', filename=f"session_{session_id}.json")
+
+@router.get("/latest/{user_id}")
+def get_latest_session(user_id: int, db: Session = Depends(get_db)):
+    session = (
+        db.query(Game_session)
+        .filter(Game_session.user_id == user_id)
+        .order_by(Game_session.created_at.desc())
+        .first()
+    )
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return {"session_id": session.session_id}
