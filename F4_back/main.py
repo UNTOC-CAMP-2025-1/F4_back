@@ -9,43 +9,30 @@ from leader_board.leader_board_router import router as leader_board_router
 from bot_character.bot_character_router import router as bot_character_router
 from bot_log.bot_log_router import router as bot_log_router
 from AI_bot.AI_bot_router import router as AI_bot_router
-from flask import Flask, request
-import os
-
-app = Flask(__name__)
-
-@app.route("/update-env", methods=["POST"])
-def update_env():
-    data = request.get_json()
-    new_url = data.get("COLAB_WEBHOOK_URL")
-
-    if not new_url:
-        return {"error": "COLAB_WEBHOOK_URL 누락됨"}, 400
-
-    # .env 파일 갱신
-    lines = []
-    env_path = ".env"
-    if os.path.exists(env_path):
-        with open(env_path, "r") as f:
-            lines = f.readlines()
-
-    updated = False
-    for i, line in enumerate(lines):
-        if line.startswith("COLAB_WEBHOOK_URL="):
-            lines[i] = f"COLAB_WEBHOOK_URL={new_url}\n"
-            updated = True
-            break
-
-    if not updated:
-        lines.append(f"COLAB_WEBHOOK_URL={new_url}\n")
-
-    with open(env_path, "w") as f:
-        f.writelines(lines)
-
-    print(f"✅ COLAB_WEBHOOK_URL 갱신됨: {new_url}")
-    return {"message": "env 갱신 완료"}, 200
+from fastapi import FastAPI, Request
 
 app = FastAPI()
+
+@app.post("/update-env")
+async def update_env(request: Request):
+    data = await request.json()
+    ngrok_url = data.get("ngrok_url")
+
+    if not ngrok_url:
+        return {"error": "ngrok_url is missing"}
+    
+    # .env 수정 (예시: COLAB_WEBHOOK_URL 갱신)
+    with open(".env", "r") as f:
+        lines = f.readlines()
+    with open(".env", "w") as f:
+        for line in lines:
+            if line.startswith("COLAB_WEBHOOK_URL="):
+                f.write(f"COLAB_WEBHOOK_URL={ngrok_url}\n")
+            else:
+                f.write(line)
+
+    print(f"✅ 새로운 ngrok 주소로 갱신됨: {ngrok_url}")
+    return {"message": "환경변수 업데이트 완료"}
 
 app.add_middleware(
     CORSMiddleware,
