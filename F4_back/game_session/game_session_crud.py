@@ -6,12 +6,19 @@ from datetime import datetime
 import json
 import os
 
-def create_game_session(db: Session, user_id: int, session_data: GameSessionCreate):
-    session = Game_session(
-        user_id=user_id,
-        user_score=session_data.user_score,
+def update_latest_game_session_score(
+    db: Session, user_id: int, session_data: GameSessionCreate
+):
+    session = (
+        db.query(Game_session)
+        .filter(Game_session.user_id == user_id)
+        .order_by(Game_session.session_id.desc())
+        .first()
     )
-    db.add(session)
+    if not session:
+        raise HTTPException(404, detail="해당 유저의 세션이 없습니다.")
+
+    session.user_score = session_data.user_score
     db.commit()
     db.refresh(session)
     return session

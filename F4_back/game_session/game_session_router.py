@@ -7,7 +7,7 @@ from functools import partial
 from datetime import datetime
 from .game_session_schema import GameSessionCreate, GameSessionResponse, GameSessionStartResponse
 from .game_session_crud import (
-    create_game_session, get_game_session_by_user, get_game_session_by_session
+    get_game_session_by_user, get_game_session_by_session, update_latest_game_session_score
 )
 from user.auth import get_current_user_id
 from functools import partial
@@ -24,15 +24,13 @@ get_game_session_db = partial(get_db, domain="game_session")
 
 # 게임 세션 생성
 @router.post("/", response_model=GameSessionResponse)
-def create_session(
+def post_score(
     session_data: GameSessionCreate,
-    authorization: str = Depends(security),
+    authorization: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_game_session_db)
 ):
-    token = authorization  # 직접 토큰을 str로 받음
-    user_id = get_current_user_id(token)  # JWT 토큰에서 유저 ID 추출
-    new_game_session = create_game_session(db, user_id, session_data)  # 게임 세션 생성
-    return new_game_session
+    user_id = get_current_user_id(authorization)
+    return update_latest_game_session_score(db, user_id, session_data)
 
 @router.get("/my", response_model=list[GameSessionResponse])
 async def list_my_sessions(
