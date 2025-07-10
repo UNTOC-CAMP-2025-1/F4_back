@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, UploadFile, File
 from sqlalchemy.orm import Session
-from AI_bot.AI_bot_schema import StateInput, ActionOutput, AIBotResponse, AIBotCreate
-from AI_bot.AI_bot_crud import decide_ai_action, create_ai_bot
+from AI_bot.AI_bot_schema import AIBotResponse, AIBotCreate
+from AI_bot.AI_bot_crud import create_ai_bot
 from AI_bot.util import get_db_by_domain
 from user.auth import get_current_user_id
 from database import get_db
