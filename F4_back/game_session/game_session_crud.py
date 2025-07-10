@@ -98,6 +98,8 @@ def notify_colab_to_train(session_id: int, log_data: list, user_id: int):
 
         response = requests.post(webhook_url, json=payload)
 
+        print(json.dumps(log_data[0], indent=2, ensure_ascii=False))
+
         if response.status_code != 200:
             print(f"[❌] Colab 학습 요청 실패: {response.status_code} - {response.text}")
             return
